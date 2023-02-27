@@ -20,7 +20,6 @@ class WishMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     //private val yeonsu = LatLng(37.410097, 126.678560)
-
     private lateinit var cardView: View
 
     private var name: String? = null
