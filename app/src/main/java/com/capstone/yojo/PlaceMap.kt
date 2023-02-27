@@ -2,6 +2,7 @@ package com.capstone.yojo
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.capstone.yojo.databinding.PlaceMapBinding
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,66 +27,8 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
     private val binding get() = mbinding!!
 
     private var placeMap: HashMap<String, MutableList<PlaceData>> = HashMap()
+    private var foodMap: HashMap<String, MutableList<PlaceData>> = HashMap()
 
-    /*
-    // 마커 추가
-    private lateinit var addedBakeryMarker: Marker
-    private var addedBakeryMarkerList = mutableListOf<Marker>()
-
-
-    private lateinit var addedBankMarker: Marker
-    private var addedBankMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedBaryMarker: Marker
-    private var addedBaryMarkerList = mutableListOf<Marker>()
-
-
-    private lateinit var addedCafeMarkerMarker: Marker
-    private var addedCafeMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedCenterMarker: Marker
-    private var addedCenterMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedCoinMarker: Marker
-    private var addedCoinMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedConvMarker: Marker
-    private var addedConvMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedHospitalMarker: Marker
-    private var addedHospitaMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedKidsMarker: Marker
-    private var addedKidsMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedLaundryMarker: Marker
-    private var addedLaundryMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedMartMarker: Marker
-    private var addedMartMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedOutletMarker: Marker
-    private var addedOutletMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedPCMarker: Marker
-    private var addedPCMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedPharmMarker: Marker
-    private var addedPharmMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedSchoolMarker: Marker
-    private var addedSchoolMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedSilverMarker: Marker
-    private var addedSilverMarkerList = mutableListOf<Marker>()
-
-    private lateinit var addedTheaterMarker: Marker
-    private var addedTheaterMarkerList = mutableListOf<Marker>()
-
-
-    private lateinit var addedFoodMarker: Marker
-    private var addedFoodMarkerList = mutableListOf<Marker>()
-    */
 
     private val yeonsu = LatLng(37.410097, 126.678560)
 
@@ -96,6 +39,8 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         placeMap = loadPlaceMap() ?: hashMapOf()
+        foodMap = loadFoodMap() ?: hashMapOf()
+
 
         /* 지도 띄우기 */
         mbinding = PlaceMapBinding.inflate(layoutInflater)
@@ -105,23 +50,59 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
 
         tabLayout = binding.placeTabs
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                val type = tab.text.toString() // 선택된 탭아이템 이름 가져옴
-
-                showMarkerForType(type, placeMap) // 선택된 탭아이템에 마커 표시하게 함수 호출
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) { }
-            override fun onTabUnselected(tab: TabLayout.Tab?) { }
-        })
-
-        val hospitalData = placeMap["Hospital"]
-        if (hospitalData != null && hospitalData.isNotEmpty()) {
-            showMarkerForType("Hospital", placeMap)
+        // placeMap 의 키값 (한글로 수정함) 을 탭 이름으로 + 탭 생성
+        for (category in placeMap.keys) {
+            val tab = tabLayout.newTab().setText(category)
+            Log.e("category ", category)
+            tabLayout.addTab(tab)
         }
 
+        // 탭 눌렀을때 이벤트
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                val category = tab.text.toString()
 
+                updateMapMarkers(category)
+                /*  음식점 몇천개여서 제외시킴
+
+                if(category == "음식점") {
+                    mMap.clear()
+                    val places = foodMap[category] ?: return
+                    for (place in places) {
+                        val markerOptions = MarkerOptions()
+                            .position(LatLng(place.latitude!!, place.longitude!!))
+                            .title(place.name)
+                            .snippet(place.address)
+                        mMap.addMarker(markerOptions)
+                    }
+                }
+
+                 */
+
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+
+
+    }
+
+    private fun updateMapMarkers(category: String) {
+        val places = placeMap[category] ?: return
+
+            // 탭 누를때마다 기존 마커 위에 겹치지 않게 마커 날려줌
+            mMap.clear()
+
+            // 각 탭별 새로운 마커 찍음
+            for (place in places) {
+                val markerOptions = MarkerOptions()
+                    .position(LatLng(place.latitude!!, place.longitude!!))
+                    .title(place.name)
+                    .snippet(place.address)
+                mMap.addMarker(markerOptions)
+            }
 
     }
 
@@ -134,43 +115,12 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
         return Gson().fromJson(json, type)
     }
 
-    /*
-    private fun makeFoodMarker() {
-        val food = "Food"
-        val foodList = placeMap[food]
+    private fun loadFoodMap(): HashMap<String, MutableList<PlaceData>>? {
+        val prefs = getSharedPreferences("my_food", Context.MODE_PRIVATE)
+        val json = prefs.getString("my_food", null)
+        val type = object : TypeToken<HashMap<String, MutableList<PlaceData>>>() {}.type
+        return Gson().fromJson(json, type)
     }
-     */
-
-
-    private fun showMarkerForType(type: String, placeMap: HashMap<String, MutableList<PlaceData>>) {
-        // 기존 마커 지우기
-        //mMap.clear()
-
-        // 각각의 TabItem 눌렸을 때 해당 마커 만들기
-        val markerOptions = when (type) {
-            "병원" -> {
-                val hospitalData = placeMap["Hospital"]
-                if (hospitalData != null && hospitalData.isNotEmpty()) {
-                    val firstHospital = hospitalData[0]
-                    MarkerOptions().position(LatLng(firstHospital.latitude!!, firstHospital.longitude!!)).title(firstHospital.name)
-                } else {
-                    null
-                }
-            }
-            "Park" -> MarkerOptions().position(LatLng(37.6, -122.3)).title("Park")
-
-            else -> null
-
-        }
-
-        // 지도에 마커 띄우기
-        if (markerOptions != null) {
-            mMap.addMarker(markerOptions)
-            val cameraPosition = CameraPosition.Builder().target(markerOptions.position).zoom(13.0f).build()
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-        }
-    }
-
 
 
     override fun onMapReady(googleMap: GoogleMap) {
