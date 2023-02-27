@@ -35,7 +35,6 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
 
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         placeMap = loadPlaceMap() ?: hashMapOf()
