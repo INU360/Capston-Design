@@ -19,6 +19,7 @@ class SplashActivity : AppCompatActivity() {
 
 
     private val placeMap : HashMap<String, MutableList<PlaceData>> = hashMapOf()
+    private val foodMap : HashMap<String, MutableList<PlaceData>> = hashMapOf()
 
     private val opiMarkerList : ArrayList<OpiMarkerData> = ArrayList()
 
@@ -34,6 +35,7 @@ class SplashActivity : AppCompatActivity() {
 
         // 함수 실행해서 Firebase 에 저장된 데이터 전부 끌어오면 메인액티비티로 넘어감
         fetchDataFromFirebase()
+        // if문으로 배열에 데이터 담겨있으면 바로 메인액티비티로 넘어가게 해도 될 듯
     }
 
     private fun fetchDataFromFirebase() {
@@ -53,7 +55,7 @@ class SplashActivity : AppCompatActivity() {
 
                         "Bakery" -> {
                             val snp = snapshot.child("Bakery")
-                            val placeKey = snp.key
+                            val placeKey = "제과점"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -64,12 +66,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Bank" -> {
                             val snp = snapshot.child("Bank")
-                            val placeKey = snp.key
+                            val placeKey = "은행"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -80,12 +82,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Bar" -> {
                             val snp = snapshot.child("Bar")
-                            val placeKey = snp.key
+                            val placeKey = "단란주점"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -96,12 +98,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Cafe" -> {
                             val snp = snapshot.child("Cafe")
-                            val placeKey = snp.key
+                            val placeKey = "카페"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -112,12 +114,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Center" -> {
                             val snp = snapshot.child("Center")
-                            val placeKey = snp.key
+                            val placeKey = "공공기관"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -128,14 +130,14 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         // 스냅샷 자식들 중 "Coin" 이면
                         "Coin" -> {
                             // 스냅샷 자식중 Coin
                             val snp = snapshot.child("Coin")
-                            val placeKey = snp.key
+                            val placeKey = "코인노래방"
                             val valueList = mutableListOf<PlaceData>()
                             // coin 안에 있는 항목들 for문으로 전부 가져옴
                             for (value in snp.children) {
@@ -152,12 +154,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Convenience" -> {
                             val snp = snapshot.child("Convenience")
-                            val placeKey = snp.key
+                            val placeKey = "편의점"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -168,12 +170,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Hospital" -> {
                             val snp = snapshot.child("Hospital")
-                            val placeKey = snp.key
+                            val placeKey = "병원"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -184,12 +186,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Kids" -> {
                             val snp = snapshot.child("Kids")
-                            val placeKey = snp.key
+                            val placeKey = "어린이집"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -200,12 +202,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Laundry" -> {
                             val snp = snapshot.child("Laundry")
-                            val placeKey = snp.key
+                            val placeKey = "세탁소"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -216,12 +218,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Mart" -> {
                             val snp = snapshot.child("Mart")
-                            val placeKey = snp.key
+                            val placeKey = "마트"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -232,12 +234,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Outlet" -> {
                             val snp = snapshot.child("Outlet")
-                            val placeKey = snp.key
+                            val placeKey = "아울렛"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -248,12 +250,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "PCroom" -> {
                             val snp = snapshot.child("PCroom")
-                            val placeKey = snp.key
+                            val placeKey = "PC방"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -264,12 +266,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Pharmacy" -> {
                             val snp = snapshot.child("Pharmacy")
-                            val placeKey = snp.key
+                            val placeKey = "약국"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -280,12 +282,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "School" -> {
                             val snp = snapshot.child("School")
-                            val placeKey = snp.key
+                            val placeKey = "학교"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -296,12 +298,12 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                         "Silver" -> {
                             val snp = snapshot.child("Silver")
-                            val placeKey = snp.key
+                            val placeKey ="노인복지"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -312,13 +314,13 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
 
                         "Theater" -> {
                             val snp = snapshot.child("Theater")
-                            val placeKey = snp.key
+                            val placeKey = "영화관"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -329,13 +331,13 @@ class SplashActivity : AppCompatActivity() {
 
                                 valueList.add(set)
                             }
-                            placeMap[placeKey!!] = valueList
+                            placeMap[placeKey] = valueList
                         }
 
                     }
 
                 }
-
+                savePlaceMap(placeMap)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -351,7 +353,7 @@ class SplashActivity : AppCompatActivity() {
                     when (ds.key) {
                         "Food" -> {
                             val snp = snapshot.child("Food")
-                            val placeKey = snp.key
+                            val placeKey = "음식점"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 for (dt in value.children) {
@@ -364,7 +366,7 @@ class SplashActivity : AppCompatActivity() {
 
                                     valueList.add(set)
                                 }
-                                placeMap[placeKey!!] = valueList
+                                placeMap[placeKey] = valueList
                             }
 
                         }
@@ -373,13 +375,14 @@ class SplashActivity : AppCompatActivity() {
 
                 }
                 // SharedPreference 에 placeMap 저장
-                savePlaceMap(placeMap)
+                saveFoodMap(placeMap)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
                 // Handle the error
             }
         })
+
 
 
 
@@ -474,6 +477,7 @@ class SplashActivity : AppCompatActivity() {
                 saveOpiMarkerList(opiMarkerList)
                 saveDetailsData(detailsMap)
 
+
                 launchMainActivity()
             }
 
@@ -495,6 +499,22 @@ class SplashActivity : AppCompatActivity() {
             editor.putString("my_place", json)
         } else {
             editor.putString("my_place", null)
+        }
+
+        editor.apply()
+    }
+
+    // 음식점 저장 (foodMap)
+    private fun saveFoodMap(foodMap: HashMap<String, MutableList<PlaceData>>?) {
+        val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+
+        if (foodMap != null) {
+            val gson = Gson()
+            val json = gson.toJson(foodMap)
+            editor.putString("my_food", json)
+        } else {
+            editor.putString("my_food", null)
         }
 
         editor.apply()
