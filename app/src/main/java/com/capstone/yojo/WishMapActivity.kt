@@ -59,7 +59,12 @@ class WishMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 
+            googleMap.setOnMarkerClickListener {
 
+                cardView.visibility = View.VISIBLE
+
+                false
+            }
 
             // 02. 08
             //마커 클릭해서 카드뷰 띄우고 맵 클릭했을 때 카드뷰 없앰
@@ -70,8 +75,7 @@ class WishMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         cardView = findViewById(R.id.cardview)
         cardView.visibility = View.VISIBLE
-        //초기 구동시 카드뷰 안보인채로
-        //cardView.visibility = View.GONE
+
 
     }
 
