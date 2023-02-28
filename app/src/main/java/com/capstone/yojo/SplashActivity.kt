@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.google.common.reflect.TypeToken
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -19,7 +18,7 @@ class SplashActivity : AppCompatActivity() {
 
 
     private val placeMap : HashMap<String, MutableList<PlaceData>> = hashMapOf()
-    private val foodMap : HashMap<String, MutableList<PlaceData>> = hashMapOf()
+    //private val foodMap : HashMap<String, MutableList<PlaceData>> = hashMapOf()
 
     private val opiMarkerList : ArrayList<OpiMarkerData> = ArrayList()
 
@@ -43,7 +42,7 @@ class SplashActivity : AppCompatActivity() {
         val database = Firebase.database
 
         val opiReference = database.getReference("OpiMarker") // 오피스텔 카테고리 접근
-        val foodReference = database.getReference("FoodMarker")
+        //val foodReference = database.getReference("FoodMarker")
         val placeReference = database.getReference("Marker")
 
 
@@ -345,7 +344,7 @@ class SplashActivity : AppCompatActivity() {
             }
         })
 
-
+        /*
         foodReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 // 최상위 경로의 자식들에 접근
@@ -382,6 +381,8 @@ class SplashActivity : AppCompatActivity() {
                 // Handle the error
             }
         })
+
+         */
 
 
 
@@ -448,7 +449,7 @@ class SplashActivity : AppCompatActivity() {
                                     //Log.e("list ==" , detailsList.toString())
                                 }
 
-                                detailsMap[apt!!] = detailsList
+                                detailsMap[apt] = detailsList
                                 Log.e("detailsMap ", detailsMap.toString())
                                 //Log.e("key of map ", mapKey.toString())
                                 // } // if문 닫는 괄호
@@ -504,6 +505,7 @@ class SplashActivity : AppCompatActivity() {
         editor.apply()
     }
 
+    /*
     // 음식점 저장 (foodMap)
     private fun saveFoodMap(foodMap: HashMap<String, MutableList<PlaceData>>?) {
         val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
@@ -520,6 +522,9 @@ class SplashActivity : AppCompatActivity() {
         editor.apply()
     }
 
+     */
+
+    /*
     // 장소들 가져오기 (placeMap)
     private fun loadPlaceMap(): HashMap<String, MutableList<PlaceData>>? {
         val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
@@ -527,6 +532,8 @@ class SplashActivity : AppCompatActivity() {
         val type = object : TypeToken<HashMap<String, MutableList<PlaceData>>>() {}.type
         return Gson().fromJson(json, type)
     }
+
+     */
 
     // 오피스텔 마커리스트 저장(opiMarkerList)
     fun saveOpiMarkerList(opiMarkerList: ArrayList<OpiMarkerData>) {
@@ -538,6 +545,7 @@ class SplashActivity : AppCompatActivity() {
         editor.apply()
     }
 
+    /*
     // 저장된 오피스텔 마커리스트 가져오기
     fun loadOpiMarkerList(): ArrayList<OpiMarkerData> {
         val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
@@ -545,6 +553,8 @@ class SplashActivity : AppCompatActivity() {
         val type = object : TypeToken<ArrayList<OpiMarkerData>>() {}.type
         return Gson().fromJson(json, type)
     }
+
+     */
 
     // 오피스텔 detailsMap 저장
     private fun saveDetailsData(detailsMap: HashMap<*, *>?) {
@@ -562,6 +572,7 @@ class SplashActivity : AppCompatActivity() {
         editor.apply()
     }
 
+    /*
     // 오피스텔 detailsMap 가져오기
     fun loadDetailsMap(): HashMap<String, MutableList<DetailsData>>? {
         val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
@@ -569,6 +580,8 @@ class SplashActivity : AppCompatActivity() {
         val type = object : TypeToken<HashMap<String, MutableList<DetailsData>>>() {}.type
         return Gson().fromJson(json, type)
     }
+
+     */
 
 
     private fun launchMainActivity() {

@@ -2,7 +2,6 @@ package com.capstone.yojo
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.capstone.yojo.databinding.PlaceMapBinding
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -11,7 +10,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.tabs.TabLayout
 import com.google.common.reflect.TypeToken
@@ -27,7 +25,7 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
     private val binding get() = mbinding!!
 
     private var placeMap: HashMap<String, MutableList<PlaceData>> = HashMap()
-    private var foodMap: HashMap<String, MutableList<PlaceData>> = HashMap()
+    //private var foodMap: HashMap<String, MutableList<PlaceData>> = HashMap()
 
 
     private val yeonsu = LatLng(37.410097, 126.678560)
@@ -38,7 +36,7 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         placeMap = loadPlaceMap() ?: hashMapOf()
-        foodMap = loadFoodMap() ?: hashMapOf()
+        //foodMap = loadFoodMap() ?: hashMapOf()
 
 
         /* 지도 띄우기 */
@@ -52,7 +50,7 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
         // placeMap 의 키값 (한글로 수정함) 을 탭 이름으로 + 탭 생성
         for (category in placeMap.keys) {
             val tab = tabLayout.newTab().setText(category)
-            Log.e("category ", category)
+            //Log.e("category ", category)
             tabLayout.addTab(tab)
         }
 
@@ -114,12 +112,15 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
         return Gson().fromJson(json, type)
     }
 
+    /*
     private fun loadFoodMap(): HashMap<String, MutableList<PlaceData>>? {
         val prefs = getSharedPreferences("my_food", Context.MODE_PRIVATE)
         val json = prefs.getString("my_food", null)
         val type = object : TypeToken<HashMap<String, MutableList<PlaceData>>>() {}.type
         return Gson().fromJson(json, type)
     }
+
+     */
 
 
     override fun onMapReady(googleMap: GoogleMap) {
