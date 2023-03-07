@@ -44,7 +44,7 @@ class SplashActivity : AppCompatActivity() {
         val database = Firebase.database
 
         val opiReference = database.getReference("OpiMarker") // 오피스텔 카테고리 접근
-        //val aptReference = database.getReference("AptMarker")
+        val aptReference = database.getReference("AptMarker")
 
         //val foodReference = database.getReference("FoodMarker")
         val placeReference = database.getReference("Marker")
@@ -572,6 +572,88 @@ class SplashActivity : AppCompatActivity() {
                 saveOpiMarkerList(opiMarkerList)
                 saveDetailsData(detailsMap)
 
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle the error
+            }
+        })
+
+        aptReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // 최상위 경로의 자식들에 접근
+                for (ds in snapshot.children) {
+                    when (ds.key) {
+                        "Apt" -> {
+                            val apart = snapshot.child("Apt")
+                            // 02. 07
+                            // detailsList 의 값을 건물명으로 묶어 details (type, price, size, build) 저장함
+                            // 02. 08 detailsMap 전역으로 선언
+                            //val detailsMap = mutableMapOf<String, MutableList<DetailsData>>()
+                            val mapKey = arrayListOf<String>()
+
+                            for (value in apart.children) {
+                                val apt = value.key
+                                mapKey.add(apt!!)
+
+                                val address = value.child("address").value as String?
+                                val build = value.child("build").value as Long?
+                                val dong = value.child("dong").value as String?
+                                val latitude = value.child("latitude").value as Double?
+                                val longitude = value.child("longitude").value as Double?
+                                val name = value.child("name").value as String?
+
+
+                                val detailsList = mutableListOf<DetailsData>()
+
+                                var floor: Long?
+                                var price: Long?
+                                var size: Double?
+                                var type: String?
+                                var date : Long?
+                                var deposit : Long?
+                                var monthly : Long?
+
+                                val details = value.child("details")
+
+                                for (dt in details.children) {
+                                    floor = dt.child("floor").value as Long?
+                                    price = dt.child("price").value as Long?
+                                    size = dt.child("size").value as Double?
+                                    type = dt.child("type").value as String?
+                                    date = dt.child("date").value as Long?
+                                    deposit = dt.child("deposit").value as Long?
+                                    monthly = dt.child("monthly").value as Long?
+
+
+                                    detailsList.add(DetailsData(floor, price, size, type, date, deposit, monthly))
+
+                                }
+
+                                detailsAptMap[apt] = detailsList
+
+                                val myset = OpiMarkerData(
+                                    name,
+                                    address,
+                                    apt,
+                                    dong,
+                                    build,
+                                    latitude,
+                                    longitude
+                                )
+
+                                aptMarkerList.add(myset)
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                saveAptMarkerList(aptMarkerList)
+                saveDetailsAptData(detailsAptMap)
+
 
                 launchMainActivity()
             }
@@ -650,7 +732,7 @@ class SplashActivity : AppCompatActivity() {
 
      */
 
-    /*
+
     // 아파트 마커리스트 저장(aptMarkerList)
     fun saveAptMarkerList(aptMarkerList: ArrayList<OpiMarkerData>) {
         val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
@@ -660,7 +742,7 @@ class SplashActivity : AppCompatActivity() {
         editor.putString("apt_marker_list", json)
         editor.apply()
     }
-     */
+
 
     /*
     // 저장된 아파트 마커리스트 가져오기

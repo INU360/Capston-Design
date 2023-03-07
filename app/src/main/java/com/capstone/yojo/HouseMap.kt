@@ -45,6 +45,10 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var addedOpiMarker: Marker
     private var addedOpiMarkerList = mutableListOf<Marker>()
 
+    // 아파트 마커 추가
+    private lateinit var addedAptMarker: Marker
+    private var addedAptMarkerList = mutableListOf<Marker>()
+
     // 02.08
     // 카드뷰 변수 선언
     private lateinit var cardView: View
@@ -59,8 +63,11 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
 
     // 마커 찍기용 데이터 들어있음 (이름, 주소, 위도, 경도 등등)
     private var opiMarkerList : ArrayList<OpiMarkerData> = ArrayList()
+    private var aptMarkerList : ArrayList<OpiMarkerData> = ArrayList()
+
     // 거래유형 / 면적 /  가격 / 층 정보가  key : value 형태로 저장되어있음
     private var detailsMap: HashMap<String, MutableList<DetailsData>> = HashMap()
+    private var detailsAptMap: HashMap<String, MutableList<DetailsData>> = HashMap()
 
 
 
@@ -88,9 +95,11 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
 
         // SharedPreferences 에 저장된 opiMarkerList 가져옴
         opiMarkerList = loadOpiMarkerList()
+        aptMarkerList = loadAptMarkerList()
 
         // SharedPreferences 에 저장된 detailsMap 가져옴
         detailsMap = loadDetailsMap() ?: hashMapOf()
+        detailsAptMap = loadDetailsAptMap() ?: hashMapOf()
 
 
         val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
@@ -108,7 +117,12 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
         // 다른 액티비티 호출하는게 나을듯
         // 여기서 클릭했을 때 배열 키값과 마커 키값 비교후 같은거 리스트뷰에추가
         cardView.setOnClickListener {
-            getOpiData(keyValue)
+            if(houseType == "오피스텔") {
+                getOpiData(keyValue)
+            }
+            else {
+                getAptData(keyValue)
+            }
         }
 
         /* 필터 버튼 클릭 이벤트 - 화면 변환 (양방향 전달)  */
@@ -128,6 +142,16 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
         return Gson().fromJson(json, type)
     }
 
+    // 저장된 아파트 마커리스트 가져오기
+    fun loadAptMarkerList(): ArrayList<OpiMarkerData> {
+        val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
+        val json = prefs.getString("apt_marker_list", null)
+        val type = object : TypeToken<ArrayList<OpiMarkerData>>() {}.type
+        return Gson().fromJson(json, type)
+    }
+
+
+
     // 오피스텔 detailsMap 가져오기
     fun loadDetailsMap(): HashMap<String, MutableList<DetailsData>>? {
         val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
@@ -135,6 +159,16 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
         val type = object : TypeToken<HashMap<String, MutableList<DetailsData>>>() {}.type
         return Gson().fromJson(json, type)
     }
+
+  // 아파트 detailsAptMap 가져오기
+  fun loadDetailsAptMap(): HashMap<String, MutableList<DetailsData>>? {
+      val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
+      val json = prefs.getString("details_apt_map", null)
+      val type = object : TypeToken<HashMap<String, MutableList<DetailsData>>>() {}.type
+      return Gson().fromJson(json, type)
+  }
+
+
 
 
     private fun addOpiMarker(opiMarkerList:ArrayList<OpiMarkerData>?) {
@@ -153,11 +187,87 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
+    private fun addAptMarker(aptMarkerList:ArrayList<OpiMarkerData>?) {
+        if (aptMarkerList != null) {
+            for (markerData in aptMarkerList) {
+                val marker = MarkerOptions()
+                marker.position(LatLng(markerData.latitude!!, markerData.longitude!!))
+                addedAptMarker = mMap.addMarker(marker)!!
+                addedAptMarker.isVisible = true
+                addedAptMarker.tag = markerData
+
+                addedAptMarkerList.add(addedAptMarker)
+
+            }
+        }
+
+    }
 
 
     fun getOpiData(keyValue: String?) {
         val list = ArrayList<String>()
         val showDetails = detailsMap[keyValue]
+        val mSquare = "\u33a1" // 제곱미터 특수문자 사용
+        val enter = "\n" // 줄바꿈
+
+
+
+
+        for (k in showDetails!!) {
+            val putType = k.type
+            val putSize = k.size
+            val putPrice = k.price
+            val putFloor = k.floor
+            val putDate = k.date
+            val putDeposit = k.deposit
+            val putMonthly = k.monthly
+
+            if(putPrice != 0L) {
+                val addText = " $putType / $putSize $mSquare / $putFloor 층 $enter $putPrice 만원 $enter 계약년월 : $putDate "
+
+                list.add(addText)
+            }
+            else if(putMonthly == 0L) {
+                val addText = " $putType / $putSize $mSquare / $putFloor 층 $enter $putDeposit 만원 $enter 계약년월 : $putDate "
+
+                list.add(addText)
+            }
+            else {
+                val addText = " $putType / $putSize $mSquare / $putFloor 층 $enter $putDeposit / $putMonthly $enter 계약년월 : $putDate"
+
+                list.add(addText)
+            }
+        }
+
+        /* 여기서 쌓인 정보들을 토대로 리스트뷰 값들의 내용 (list에 해당하는것 + 마커의 정보 [이름,주소,위도,경도]) 를 보내
+           해당 포지션의 리스트뷰의 하트 버튼이 클릭되면 writeFirebase 함수에 널값이 아닌 제대로된 값들을 다이렉트로 전달시킴
+           >> ListViewAdatper 클래스에서 처리함.
+         */
+
+
+        // bottomSheet 리스트뷰에 띄워줌
+        val bottomSheetDialog = BottomSheetDialog(this)
+
+        //val bottomSheetView = LayoutInflater.from(applicationContext).inflate(R.layout.bottom_sheet, null)
+
+        bSheetBinding = BottomSheetBinding.inflate(layoutInflater)
+
+        val adapter = ListViewAdapter(this, list, infoMap, keyValue, bottomSheetDialog)
+        val listView = bSheetBinding.listView
+        listView.adapter = adapter
+        adapter.notifyDataSetChanged()
+
+
+        // 리스트뷰 내용 보여줌
+        bottomSheetDialog.setContentView(bSheetBinding.root)
+        bottomSheetDialog.show()
+
+
+    }
+
+    fun getAptData(keyValue: String?) {
+        val list = ArrayList<String>()
+        val showDetails = detailsAptMap[keyValue]
         val mSquare = "\u33a1" // 제곱미터 특수문자 사용
         val enter = "\n" // 줄바꿈
 
@@ -224,6 +334,10 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
         if(houseType == "오피스텔") {
 
             addOpiMarker(opiMarkerList)
+        }
+
+        else {
+            addAptMarker(aptMarkerList)
         }
 
 
