@@ -131,7 +131,6 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
             startActivityForResult(intent,10) //HouseFilter에서 값 가져오면 함수 호출
         }
 
-
     } //onCreate 끝
 
     // 저장된 오피스텔 마커리스트 가져오기

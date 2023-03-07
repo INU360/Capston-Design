@@ -729,7 +729,6 @@ class SplashActivity : AppCompatActivity() {
         val type = object : TypeToken<ArrayList<OpiMarkerData>>() {}.type
         return Gson().fromJson(json, type)
     }
-
      */
 
 
