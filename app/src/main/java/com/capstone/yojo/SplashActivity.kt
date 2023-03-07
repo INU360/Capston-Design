@@ -388,98 +388,6 @@ class SplashActivity : AppCompatActivity() {
 
          */
 
-        /*  Firebase 아파트 값들 가져오기
-
-        aptReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                // 최상위 경로의 자식들에 접근
-                for (ds in snapshot.children) {
-                    when (ds.key) {
-                        "Apt" -> {
-                            val opi = snapshot.child("Apt")
-                            // detailsList 의 값을 건물명으로 묶어 details (type, price, size, build) 저장함
-                            val mapKey = arrayListOf<String>()
-
-                            for (value in opi.children) {
-                                val apt = value.key
-                                mapKey.add(apt!!)
-
-                                val address = value.child("address").value as String?
-                                val build = value.child("build").value as Long?
-                                val dong = value.child("dong").value as String?
-                                val latitude = value.child("latitude").value as Double?
-                                val longitude = value.child("longitude").value as Double?
-                                val name = value.child("name").value as String?
-
-
-                                // 아파트 매물 details (type, price, size, build ) 담기위한 리스트
-                                val detailsList = mutableListOf<DetailsData>()
-
-                                // 02. 06 더 하위에 있는 값 가져오기
-
-                                var floor: Long?
-                                var price: Long?
-                                var size: Double?
-                                var type: String?
-                                var date : Long?
-                                var deposit : Long?
-                                var monthly : Long?
-
-                                val details = value.child("details")
-
-                                for (dt in details.children) {
-                                    floor = dt.child("floor").value as Long?
-                                    price = dt.child("price").value as Long?
-                                    size = dt.child("size").value as Double?
-                                    type = dt.child("type").value as String?
-                                    date = dt.child("date").value as Long?
-                                    deposit = dt.child("deposit").value as Long?
-                                    monthly = dt.child("monthly").value as Long?
-
-
-                                    // 02.07 : detailsAptList에 각 아파트의 details에 접근해 floor, price, size 저장함
-                                    detailsList.add(DetailsData(floor, price, size, type, date, deposit, monthly))
-                                    //Log.e("list ==" , detailsList.toString())
-                                }
-
-                                detailsAptMap[apt] = detailsList
-                                Log.e("detailsAptMap ", detailsAptMap.toString())
-
-
-                                val myset = OpiMarkerData(
-                                    name,
-                                    address,
-                                    apt,
-                                    dong,
-                                    build,
-                                    latitude,
-                                    longitude
-                                )
-
-                                aptMarkerList.add(myset)
-                            }
-
-                            Log.e("marker list ", aptMarkerList.toString())
-
-                        }
-
-                    }
-
-                }
-
-                saveAptMarkerList(aptMarkerList)
-                saveDetailsAptData(detailsAptMap)
-
-
-                launchMainActivity()
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle the error
-            }
-        })
-        */
-
 
         opiReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -579,6 +487,7 @@ class SplashActivity : AppCompatActivity() {
             }
         })
 
+        //  Firebase 아파트 값들 가져오기
         aptReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 // 최상위 경로의 자식들에 접근
