@@ -75,9 +75,6 @@ class WishListAdapter(private val context: Context, private val itemList: ArrayL
                     listItemsRef.child(wishPosition.toString()).removeValue()
                 // WishListItems - uid - 건물명 - 인덱스번호
                 // 삭제위해 ListViewAdapter 에서 찜하기 했을때의 포지션값 (기존 셋팅이 0으로 되어있으면 필요없을듯)
-                // 그냥 파베 값 바로 삭제하게 하는게 나아보임
-                // 인텐트 했을때 층수를 받아와서 일치하면 삭제 (야매)
-                // 아니면 info 정보가 일치하면 삭제 식으로 구현하기
 
             }
         }
