@@ -1,11 +1,13 @@
 package com.capstone.yojo
+
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.BaseAdapter
+import android.widget.Toast
 import com.capstone.yojo.databinding.BottomListItemListBinding
-import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.capstone.yojo.model.MarkerData
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -14,36 +16,26 @@ import com.google.firebase.ktx.Firebase
 
 
 // 리스트 안에 있는거 터치시 토스트 창 띄워주는 어댑터 코드
-class ListViewAdapter (val context : Context,
-                       // 매물 정보
-                       val list : ArrayList<String>,
-                       // keyValue (건물명)을  key로 가지고 이름,주소,위도,경도 value.
-                       val infoMap : MutableMap<String, MutableList<SaveWishData>>,
-                       val keyValue : String?,
-                       val bottomSheetDialog: BottomSheetDialog) : BaseAdapter()
-{
-    private lateinit var bListBinding : BottomListItemListBinding
-
+class ListViewAdapter(
+    val context: Context,
+    val data: MarkerData,
+) : BaseAdapter() {
     private val database = Firebase.database
-
-    private val listItemDataMap = mutableMapOf<Int, ListItemData>()
-
+    private val listItemDataMap = mutableListOf<ListItemData>()
 
     init {
         val uid = getUidFromSharedPrefs(context)
         if (uid != null) {
-            val listItemsRef = database.getReference("WishListItems").child(uid).child(keyValue!!)
+            val listItemsRef = database.getReference("WishListItems").child(uid).child(data.key)
             listItemsRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     listItemDataMap.clear()
-                        for (childSnapshot in dataSnapshot.children) {
-                            val position = childSnapshot.key?.toInt() ?: 0
-                            val listItemData = childSnapshot.getValue(ListItemData::class.java)
-                            listItemData?.let {
-                                // Map에 ListItemData 넣음
-                                listItemDataMap[position] = it
-                            }
-                        }
+
+                    for (childSnapshot in dataSnapshot.children) {
+                        val listItemData =
+                            childSnapshot.getValue(ListItemData::class.java) ?: continue
+                        listItemDataMap.add(listItemData)
+                    }
 
                     notifyDataSetChanged()
                 }
@@ -53,98 +45,84 @@ class ListViewAdapter (val context : Context,
                 }
             })
         }
-
     }
 
-
-
-
-
-
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        // p1 = convertView  p2 = parent
-
         // ListViewAdapter 클래스는 bottom_list_item_list.xml 을 바인딩해서 가져옴
-        bListBinding = BottomListItemListBinding.inflate(LayoutInflater.from(context))
+        val binding =
+            if (convertView == null) BottomListItemListBinding.inflate(LayoutInflater.from(context), parent, false)
+            else BottomListItemListBinding.bind(convertView)
 
+        with(binding) {
+            val detail = data.details[position]
 
-        /*
-        val view : View
-        val holder : ViewHolder
+            val square = "\u33a1" // 제곱미터 특수문자 사용
+            val enter = "\n" // 줄바꿈
+            val item = if (detail.price != 0L) {
+                " ${detail.type} / ${detail.size} $square / ${detail.floor} 층 $enter ${detail.price} 만원 $enter 계약년월 : ${detail.date} "
 
-        if(convertView == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.bottom_list_item_list, null)
-            holder = ViewHolder()
-            holder.itemsText = view.findViewById<TextView>(R.id.textView)
-            holder.wishBtnView = view.findViewById<ImageView>(R.id.wish_btn)
-            view.tag = holder
-        }
-        else {
-            holder = convertView.tag as ViewHolder
-            view = convertView
-        }
-         */
+            } else if (detail.monthly == 0L) {
+                " ${detail.type} / ${detail.size} $square / ${detail.floor} 층 $enter ${detail.deposit} 만원 $enter 계약년월 : ${detail.date} "
 
-        val itemsText = bListBinding.textView
-        val item = list[position]
-        itemsText.setText(item)
+            } else {
+                " ${detail.type} / ${detail.size} $square / ${detail.floor} 층 $enter ${detail.deposit} / ${detail.monthly} $enter 계약년월 : ${detail.date}"
+            }
 
-        val infoMap = infoMap[keyValue]
-        var name : String? = null
-        var address : String? = null
-        var latitude : Double? = null
-        var longitude : Double? = null
+            textView.text = item
 
-        for(i in infoMap!!){
-            name = i.name
-            address = i.address
-            latitude = i.latitude
-            longitude = i.longitude
-        }
+            if (listItemDataMap.any { it.position.toInt() == detail.key }) {
+                wishBtn.setImageResource(R.drawable.heart_fill)
+            } else {
+                wishBtn.setImageResource(R.drawable.heart_wish)
+            }
 
-        val myPosition = position.toLong()
+            wishBtn.setOnClickListener {
+                val uid = getUidFromSharedPrefs(context) ?: return@setOnClickListener // UID 가져옴
 
-        val wishBtnView = bListBinding.wishBtn
-        val listItemData = listItemDataMap[position]
-        if (listItemData != null) {
-            // 해당 position 에 ListItemData 존재하면 꽉찬하트
-            wishBtnView.setImageResource(R.drawable.heart_fill)
-        } else {
-            // 없으면 빈하트
-            wishBtnView.setImageResource(R.drawable.heart_wish)
-        }
+                val listItemsRef =
+                    database.getReference("WishListItems").child(uid).child(data.key)
+                val newData =
+                    ListItemData(
+                        item,
+                        1,
+                        data.name,
+                        data.address,
+                        data.latitude,
+                        data.longitude,
+                        detail.key.toLong(),
+                        data.key
+                    )
 
-        wishBtnView.setOnClickListener {
-            val uid = getUidFromSharedPrefs(context) // UID 가져옴
-            if (uid != null) {
-                val listItemsRef = database.getReference("WishListItems").child(uid).child(keyValue!!)
-                val newData = ListItemData(item, 1, name, address, latitude, longitude, myPosition, keyValue)
-                val imgIndex = listItemData?.imgIndex ?: 0
-                if (imgIndex == 0) {
-                    Toast.makeText(context, "찜했습니다", Toast.LENGTH_SHORT).show()
-                    wishBtnView.setImageResource(R.drawable.heart_fill)
-                    listItemsRef.child(position.toString()).setValue(newData)
-                } else {
+                if (listItemDataMap.any { it.position == detail.key.toLong() }) {
                     Toast.makeText(context, "찜 취소", Toast.LENGTH_SHORT).show()
-                    wishBtnView.setImageResource(R.drawable.heart_wish)
-                    listItemsRef.child(position.toString()).removeValue()
+                    wishBtn.setImageResource(R.drawable.heart_wish)
+                    listItemsRef.child(detail.key.toString()).removeValue()
+
+                } else {
+                    Toast.makeText(context, "찜했습니다", Toast.LENGTH_SHORT).show()
+                    wishBtn.setImageResource(R.drawable.heart_fill)
+                    listItemsRef.child(detail.key.toString()).setValue(newData)
                 }
             }
         }
 
-        return bListBinding.root
+        return binding.root
     }
 
-    override fun getCount(): Int { return list.size }
+    override fun getCount(): Int {
+        return data.details.size
+    }
 
-    override fun getItem(position: Int): Any { return list[position] }
+    override fun getItem(position: Int): Any {
+        return data.details[position]
+    }
 
-    override fun getItemId(position: Int): Long { return position.toLong() }
-
+    override fun getItemId(position: Int): Long {
+        return data.details[position].key.toLong()
+    }
 
     private fun getUidFromSharedPrefs(context: Context): String? {
         val prefs = context.getSharedPreferences("MyUID", Context.MODE_PRIVATE)
         return prefs.getString("uid", null)
     }
-
 }
