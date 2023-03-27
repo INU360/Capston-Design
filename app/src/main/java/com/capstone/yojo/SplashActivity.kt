@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.capstone.yojo.model.MarkerData
+import com.google.common.reflect.TypeToken
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -12,19 +14,21 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import java.io.IOException
+import java.io.InputStreamReader
 
 
 class SplashActivity : AppCompatActivity() {
 
 
-    private val placeMap : HashMap<String, MutableList<PlaceData>> = hashMapOf()
+    private val placeMap: HashMap<String, MutableList<PlaceData>> = hashMapOf()
     //private val foodMap : HashMap<String, MutableList<PlaceData>> = hashMapOf()
 
-    private val opiMarkerList : ArrayList<OpiMarkerData> = ArrayList()
-    private val aptMarkerList : ArrayList<OpiMarkerData> = ArrayList()
+    private val opiMarkerList: ArrayList<OpiMarkerData> = ArrayList()
+    private val aptMarkerList: ArrayList<OpiMarkerData> = ArrayList()
 
-    private val detailsMap : HashMap<String, MutableList<DetailsData>> = hashMapOf()
-    private val detailsAptMap : HashMap<String, MutableList<DetailsData>> = hashMapOf()
+    private val detailsMap: HashMap<String, MutableList<DetailsData>> = hashMapOf()
+    private val detailsAptMap: HashMap<String, MutableList<DetailsData>> = hashMapOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +37,13 @@ class SplashActivity : AppCompatActivity() {
 
         // 스플래시 화면에서 데이터 로드 위해 Firebase 초기화
         FirebaseApp.initializeApp(this)
+
+        /*
+        // 03 19 시도
+        val aptDataSet = readJSONapt()
+        saveAptData(aptDataSet)
+         */
+
 
         // 함수 실행해서 Firebase 에 저장된 데이터 전부 끌어오면 메인액티비티로 넘어감
         fetchDataFromFirebase()
@@ -45,6 +56,7 @@ class SplashActivity : AppCompatActivity() {
 
         val opiReference = database.getReference("OpiMarker") // 오피스텔 카테고리 접근
         val aptReference = database.getReference("AptMarker")
+        val apt2Reference = database.getReference("AptMarker2")
 
         //val foodReference = database.getReference("FoodMarker")
         val placeReference = database.getReference("Marker")
@@ -306,7 +318,7 @@ class SplashActivity : AppCompatActivity() {
 
                         "Silver" -> {
                             val snp = snapshot.child("Silver")
-                            val placeKey ="노인복지"
+                            val placeKey = "노인복지"
                             val valueList = mutableListOf<PlaceData>()
                             for (value in snp.children) {
                                 val latitude = value.child("latitude").value as Double
@@ -389,96 +401,40 @@ class SplashActivity : AppCompatActivity() {
          */
 
 
+
         opiReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 // 최상위 경로의 자식들에 접근
                 for (ds in snapshot.children) {
                     when (ds.key) {
                         "Opi" -> {
+                            // TODO: 아파트 데이터도 아래와 같은 방식으로 불러와서 저장해야 함
                             val opi = snapshot.child("Opi")
-                            // 02. 07
-                            // detailsList 의 값을 건물명으로 묶어 details (type, price, size, build) 저장함
-                            // 02. 08 detailsMap 전역으로 선언
-                            //val detailsMap = mutableMapOf<String, MutableList<DetailsData>>()
-                            val mapKey = arrayListOf<String>()
+                            val dataSet = arrayListOf<MarkerData>()
 
                             for (value in opi.children) {
-                                val apt = value.key
-                                mapKey.add(apt!!)
+                                val data = value.getValue(MarkerData::class.java)?.apply {
+                                    // key 값은 아파트 이름
+                                    key = value.key!!
+                                } ?: continue
 
-                                val address = value.child("address").value as String?
-                                val build = value.child("build").value as Long?
-                                val dong = value.child("dong").value as String?
-                                val latitude = value.child("latitude").value as Double?
-                                val longitude = value.child("longitude").value as Double?
-                                val name = value.child("name").value as String?
-
-
-                                // 02. 07 배열에 details 값 저장하기
-                                // 오피스텔 매물 details (type, price, size, build )
-                                // 담기위한 리스트
-                                val detailsList = mutableListOf<DetailsData>()
-
-                                // 02. 06 더 하위에 있는 값 가져오기
-                                // 하위 값 가져오려면 해당 값보다 위에 있는 값들을 먼저 가져온 후 처리해야함
-                                //detailsList.clear()
-                                var floor: Long?
-                                var price: Long?
-                                var size: Double?
-                                var type: String?
-                                var date : Long?
-                                var deposit : Long?
-                                var monthly : Long?
-
-                                val details = value.child("details")
-                                //Log.e("mydetails", details.toString())
-
-                                // if 문으로 안묶어도 실행 됨
-                                //if(details.exists()) {
-
-                                for (dt in details.children) {
-                                    floor = dt.child("floor").value as Long?
-                                    price = dt.child("price").value as Long?
-                                    size = dt.child("size").value as Double?
-                                    type = dt.child("type").value as String?
-                                    date = dt.child("date").value as Long?
-                                    deposit = dt.child("deposit").value as Long?
-                                    monthly = dt.child("monthly").value as Long?
-
-
-                                    // 02.07 : detailsList에 각 오피스텔의 details에 접근해 floor, price, size 저장함
-                                    detailsList.add(DetailsData(floor, price, size, type, date, deposit, monthly))
-                                    //Log.e("list ==" , detailsList.toString())
+                                data.details.forEachIndexed { index, details ->
+                                    // key 값은 Index (숫자)
+                                    details.key =
+                                        value.child("details").children.toList()[index].key!!.toInt()
                                 }
 
-                                detailsMap[apt] = detailsList
-                                Log.e("detailsMap ", detailsMap.toString())
-                                //Log.e("key of map ", mapKey.toString())
-                                // } // if문 닫는 괄호
-
-                                val myset = OpiMarkerData(
-                                    name,
-                                    address,
-                                    apt,
-                                    dong,
-                                    build,
-                                    latitude,
-                                    longitude
-                                )
-
-                                opiMarkerList.add(myset)
+                                dataSet.add(data)
                             }
 
-                            Log.e("marker list ", opiMarkerList.toString())
-
+                            getSharedPreferences("my_pref", Context.MODE_PRIVATE)
+                                .edit()
+                                .putString("opi_marker_list", Gson().toJson(dataSet))
+                                .apply()
                         }
-
                     }
-
                 }
 
-                saveOpiMarkerList(opiMarkerList)
-                saveDetailsData(detailsMap)
 
             }
 
@@ -487,82 +443,88 @@ class SplashActivity : AppCompatActivity() {
             }
         })
 
-        //  Firebase 아파트 값들 가져오기
         aptReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 // 최상위 경로의 자식들에 접근
+                val dataSet = arrayListOf<MarkerData>()
                 for (ds in snapshot.children) {
                     when (ds.key) {
                         "Apt" -> {
-                            val apart = snapshot.child("Apt")
-                            // 02. 07
-                            // detailsList 의 값을 건물명으로 묶어 details (type, price, size, build) 저장함
-                            // 02. 08 detailsMap 전역으로 선언
-                            //val detailsMap = mutableMapOf<String, MutableList<DetailsData>>()
-                            val mapKey = arrayListOf<String>()
 
-                            for (value in apart.children) {
-                                val apt = value.key
-                                mapKey.add(apt!!)
-
-                                val address = value.child("address").value as String?
-                                val build = value.child("build").value as Long?
-                                val dong = value.child("dong").value as String?
-                                val latitude = value.child("latitude").value as Double?
-                                val longitude = value.child("longitude").value as Double?
-                                val name = value.child("name").value as String?
+                            val apt = snapshot.child("Apt")
 
 
-                                val detailsList = mutableListOf<DetailsData>()
+                            for (value in apt.children) {
+                                val data = value.getValue(MarkerData::class.java)?.apply {
+                                    // key 값은 아파트 이름
+                                    key = value.key!!
+                                } ?: continue
 
-                                var floor: Long?
-                                var price: Long?
-                                var size: Double?
-                                var type: String?
-                                var date : Long?
-                                var deposit : Long?
-                                var monthly : Long?
-
-                                val details = value.child("details")
-
-                                for (dt in details.children) {
-                                    floor = dt.child("floor").value as Long?
-                                    price = dt.child("price").value as Long?
-                                    size = dt.child("size").value as Double?
-                                    type = dt.child("type").value as String?
-                                    date = dt.child("date").value as Long?
-                                    deposit = dt.child("deposit").value as Long?
-                                    monthly = dt.child("monthly").value as Long?
-
-
-                                    detailsList.add(DetailsData(floor, price, size, type, date, deposit, monthly))
-
+                                data.details.forEachIndexed { index, details ->
+                                    // key 값은 Index (숫자)
+                                    details.key =
+                                        value.child("details").children.toList()[index].key!!.toInt()
                                 }
 
-                                detailsAptMap[apt] = detailsList
-
-                                val myset = OpiMarkerData(
-                                    name,
-                                    address,
-                                    apt,
-                                    dong,
-                                    build,
-                                    latitude,
-                                    longitude
-                                )
-
-                                aptMarkerList.add(myset)
+                                dataSet.add(data)
                             }
+
 
                         }
 
+                        "Apt2" -> {
+
+                            val apt = snapshot.child("Apt2")
+                            //val dataSet = arrayListOf<MarkerData>()
+
+                            for (value in apt.children) {
+                                val data = value.getValue(MarkerData::class.java)?.apply {
+                                    // key 값은 아파트 이름
+                                    key = value.key!!
+                                } ?: continue
+
+                                data.details.forEachIndexed { index, details ->
+                                    // key 값은 Index (숫자)
+                                    details.key =
+                                        value.child("details").children.toList()[index].key!!.toInt()
+                                }
+
+                                dataSet.add(data)
+                            }
+
+
+                        }
+
+                        "Apt3" -> {
+
+                            val apt = snapshot.child("Apt3")
+                            //val dataSet = arrayListOf<MarkerData>()
+
+                            for (value in apt.children) {
+                                val data = value.getValue(MarkerData::class.java)?.apply {
+                                    // key 값은 아파트 이름
+                                    key = value.key!!
+                                } ?: continue
+
+                                data.details.forEachIndexed { index, details ->
+                                    // key 값은 Index (숫자)
+                                    details.key =
+                                        value.child("details").children.toList()[index].key!!.toInt()
+                                }
+
+                                dataSet.add(data)
+                            }
+
+
+
+                        }
                     }
 
                 }
-
-                saveAptMarkerList(aptMarkerList)
-                saveDetailsAptData(detailsAptMap)
-
+                getSharedPreferences("my_pref", Context.MODE_PRIVATE)
+                    .edit()
+                    .putString("apt_marker_list", Gson().toJson(dataSet))
+                    .apply()
 
                 launchMainActivity()
             }
@@ -571,8 +533,52 @@ class SplashActivity : AppCompatActivity() {
                 // Handle the error
             }
         })
-
     }
+
+    /*
+    //03 19 시도
+    private fun readJSONapt() : ArrayList<MarkerData> {
+        val gson = Gson()
+        val assetManager = assets
+        val inputStream = assetManager.open("AptClick.json")
+        val reader = InputStreamReader(inputStream)
+
+        return try {
+            val type = object : TypeToken<HashMap<String, MarkerData>>() {}.type
+            val markerDataMap: HashMap<String, MarkerData> = gson.fromJson(reader, type)
+
+            ArrayList<MarkerData>().apply {
+                for ((key, markerData) in markerDataMap) {
+                    markerData.key = key
+                    markerData.details.forEachIndexed { index, details ->
+                        details.key = index
+                    }
+                    add(markerData)
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            arrayListOf()
+        } finally {
+            try {
+                reader.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+     */
+
+    /*
+    private fun saveAptData(aptDataSet: List<MarkerData>) {
+        getSharedPreferences("my_pref", Context.MODE_PRIVATE)
+            .edit()
+            .putString("apt_marker_list", Gson().toJson(aptDataSet))
+            .apply()
+    }
+
+     */
 
     // 장소들 저장 (placeMap)
     private fun savePlaceMap(placeMap: HashMap<String, MutableList<PlaceData>>?) {
@@ -638,9 +644,10 @@ class SplashActivity : AppCompatActivity() {
         val type = object : TypeToken<ArrayList<OpiMarkerData>>() {}.type
         return Gson().fromJson(json, type)
     }
+
      */
 
-
+    /*
     // 아파트 마커리스트 저장(aptMarkerList)
     fun saveAptMarkerList(aptMarkerList: ArrayList<OpiMarkerData>) {
         val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
@@ -650,7 +657,7 @@ class SplashActivity : AppCompatActivity() {
         editor.putString("apt_marker_list", json)
         editor.apply()
     }
-
+     */
 
     /*
     // 저장된 아파트 마커리스트 가져오기
@@ -716,11 +723,9 @@ class SplashActivity : AppCompatActivity() {
      */
 
 
-
-
     private fun launchMainActivity() {
-            val intent = Intent(this@SplashActivity, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+        val intent = Intent(this@SplashActivity, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
