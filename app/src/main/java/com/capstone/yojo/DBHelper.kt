@@ -18,6 +18,7 @@ class DBHelper(context: Context):SQLiteOpenHelper(context,"crimeDB",null,1){
                 "num integer,"+
                 "dong text)")
 
+
         db?.execSQL("insert into crime_TB (name,address,long,lat,content,place,device,num,dong) values (\"강두환\", \"인천광역시 연수구 함박안로134번길 7-14\",126.68327,37.4266006,\"미성년자 성희롱 + 성적 학대행위 9회 / 2회 간음\",\"인천 연수구\",\"N\",0,\"연수동\")")
         db?.execSQL("insert into crime_TB (name,address,long,lat,content,place,device,num,dong) values (\"고형선\",\"인천광역시 연수구 솔샘로 70\",126.664884,37.4249909,\"강제추행 1회\",\"인천 남동구\",\"Y\",2,\"청학동\")")
         db?.execSQL("insert into crime_TB (name,address,long,lat,content,place,device,num,dong) values (\"곽병운\", \"인천광역시 연수구 학나래로6번길 48\",126.698075,37.4251979,\"미성년자 강간 3회 + 촬영 1회\",\"인천 동구, 남구, 중구\",\"N\",0,\"선학동\")")
