@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+        android:id="@+id/songdo"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:background="@drawable/round_edge_btn_blue"
+        android:text="@string/dong_compare1"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/dongchun"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:background="@drawable/round_edge_btn_blue"
+        android:text="@string/dong_compare2"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        app:layout_constraintLeft_toRightOf="@+id/songdo"
+        app:layout_constraintRight_toLeftOf="@+id/chunghak"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/chunghak"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:background="@drawable/round_edge_btn_blue"
+        android:text="@string/dong_compare3"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/okryeon"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:background="@drawable/round_edge_btn_blue"
+        android:text="@string/dong_compare4"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/songdo" />
+
+    <Button
+        android:id="@+id/yeonsoo"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:background="@drawable/round_edge_btn_blue"
+        android:text="@string/dong_compare5"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toRightOf="@+id/okryeon"
+        app:layout_constraintRight_toLeftOf="@+id/sunhak"
+        app:layout_constraintTop_toBottomOf="@+id/dongchun"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/sunhak"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:background="@drawable/round_edge_btn_blue"
+        android:text="@string/dong_compare6"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chunghak"
+        tools:ignore="MissingConstraints" />
+
+    <ImageView
+        android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sunhak"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/hashTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="# 청소년 자녀가 있는 가정 추천 #노인 비추천"
+        android:textColor="@color/colorHint"
+        android:textSize="13sp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/graph"/>
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="송도동은 교육시설 100개로 동 평균 50에 비해 50개나 많으며, 청소년에게 유해한 단란주점이 0개로 평균 10개에 비해 적습니다."
+        android:textColor="#000"
+        android:textSize="13sp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hashTag"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

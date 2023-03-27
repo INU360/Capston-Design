@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#fff">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout1"
+        android:layout_width="350sp"
+        android:layout_height="100sp"
+        android:background="#fff"
+        android:layout_marginTop="30sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        >
+        <TextView
+            android:id="@+id/tv_main_name1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20sp"
+            android:text="@string/apartFilter_name1"
+            android:textSize="20sp"
+            android:textColor="#000"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/maemae"
+            android:layout_width="100sp"
+            android:layout_height="40sp"
+            android:background="@drawable/round_btn_blue"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:text="@string/apartFiler_btn1_1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+        <Button
+            android:id="@+id/junsae"
+            android:layout_width="100sp"
+            android:layout_height="40sp"
+            android:background="@drawable/round_btn_blue"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:text="@string/apartFiler_btn1_2"
+            app:layout_constraintLeft_toRightOf="@id/maemae"
+            app:layout_constraintRight_toLeftOf="@id/wolsae"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+        <Button
+            android:id="@+id/wolsae"
+            android:layout_width="100sp"
+            android:layout_height="40sp"
+            android:background="@drawable/round_btn_blue"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:text="@string/apartFiler_btn1_3"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4px"
+        android:background="@color/colorGray"
+        android:layout_marginTop="30sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout1"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout2"
+        android:layout_width="350sp"
+        android:layout_height="80sp"
+        android:background="#fff"
+        android:layout_marginTop="30sp"
+        app:layout_constraintTop_toBottomOf="@+id/layout1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+        <TextView
+            android:id="@+id/tv_main_name2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20sp"
+            android:text="@string/apartFilter_name2"
+            android:textSize="20sp"
+            android:textColor="#000"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <EditText
+            android:id="@+id/edit_start"
+            android:layout_width="100sp"
+            android:layout_height="30sp"
+            android:background="@drawable/round_btn_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" 만원   ~   "
+            android:textSize="20sp"
+            android:textColor="#000"
+            app:layout_constraintLeft_toRightOf="@id/edit_start"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+        <EditText
+            android:id="@+id/edit_finish"
+            android:layout_width="100sp"
+            android:layout_height="30sp"
+            android:background="@drawable/round_btn_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/tv1"/>
+        <TextView
+            android:id="@+id/tv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" 만원"
+            android:textSize="20sp"
+            android:textColor="#000"
+            app:layout_constraintLeft_toRightOf="@id/edit_finish"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4px"
+        android:background="@color/colorGray"
+        android:layout_marginTop="30sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout2"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout3"
+        android:layout_width="350sp"
+        android:layout_height="140sp"
+        android:background="#fff"
+        android:layout_marginTop="30sp"
+        app:layout_constraintTop_toBottomOf="@+id/layout2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+        <TextView
+            android:id="@+id/tv_main_name3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20sp"
+            android:text="@string/apartFilter_name3"
+            android:textSize="20sp"
+            android:textColor="#000"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/btn_area1"
+            android:layout_width="100sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn3_1"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_main_name3" />
+        <Button
+            android:id="@+id/btn_area2"
+            android:layout_width="100sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn3_2"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintLeft_toRightOf="@+id/btn_area1"
+            app:layout_constraintRight_toLeftOf="@+id/btn_area3"
+            app:layout_constraintTop_toBottomOf="@id/tv_main_name3" />
+
+        <Button
+            android:id="@+id/btn_area3"
+            android:layout_width="100sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn3_3"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_main_name3" />
+
+        <Button
+            android:id="@+id/btn_area4"
+            android:layout_width="100sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn3_4"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+        <Button
+            android:id="@+id/btn_area5"
+            android:layout_width="100sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn3_5"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintLeft_toRightOf="@+id/btn_area4"
+            app:layout_constraintRight_toLeftOf="@+id/btn_area6"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <Button
+            android:id="@+id/btn_area6"
+            android:layout_width="100sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn3_6"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4px"
+        android:background="@color/colorGray"
+        android:layout_marginTop="30sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout3"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout4"
+        android:layout_width="350sp"
+        android:layout_height="80sp"
+        android:background="#fff"
+        android:layout_marginTop="30sp"
+        app:layout_constraintTop_toBottomOf="@+id/layout3"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+        <TextView
+            android:id="@+id/tv_main_name4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20sp"
+            android:text="@string/apartFilter_name4"
+            android:textSize="20sp"
+            android:textColor="#000"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btn_year1"
+            android:layout_width="80sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn4_1"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+        <Button
+            android:id="@+id/btn_year2"
+            android:layout_width="80sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn4_2"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintLeft_toRightOf="@+id/btn_year1"
+            app:layout_constraintRight_toLeftOf="@+id/btn_year3"
+            app:layout_constraintBottom_toBottomOf="parent" />
+        <Button
+            android:id="@+id/btn_year3"
+            android:layout_width="80sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn4_3"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintLeft_toRightOf="@+id/btn_year2"
+            app:layout_constraintRight_toLeftOf="@+id/btn_year4"
+            app:layout_constraintBottom_toBottomOf="parent" />
+        <Button
+            android:id="@+id/btn_year4"
+            android:layout_width="80sp"
+            android:layout_height="40sp"
+            android:text="@string/apartFiler_btn4_4"
+            android:textColor="#fff"
+            android:background="@drawable/round_btn_blue"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/btnOk"
+        android:layout_width="match_parent"
+        android:layout_height="70sp"
+        android:background="@color/colorMain"
+        android:text="적용"
+        android:textSize="20sp"
+        android:textColor="#fff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:id="@+id/view1"
+        android:layout_width="1px"
+        android:layout_height="match_parent"
+        android:background="#fff"
+        app:layout_constraintLeft_toRightOf="@+id/solo"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#fff"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/child" />
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#fff"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ratingPlay" />
+
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dong_recommend_name1"
+        android:textSize="20sp"
+        android:textColor="#000"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/solo"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:background="@drawable/round_edge_btn_blue"
+        android:text="@string/dong_recommend1"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv1" />
+
+    <Button
+        android:id="@+id/child"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:background="@drawable/round_edge_btn_blue"
+        android:text="@string/dong_recommend2"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintLeft_toRightOf="@+id/solo"
+        app:layout_constraintRight_toLeftOf="@+id/senior"
+        app:layout_constraintTop_toBottomOf="@+id/tv1" />
+
+    <Button
+        android:id="@+id/senior"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:background="@drawable/round_edge_btn_blue"
+        android:text="@string/dong_recommend3"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv1"/>
+
+    <Button
+        android:id="@+id/btnOk"
+        android:layout_width="match_parent"
+        android:layout_height="70sp"
+        android:background="@color/colorMain"
+        android:text="검색"
+        android:textSize="20sp"
+        android:textColor="#fff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvFood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dong_recommend_category1"
+        android:textSize="15sp"
+        android:textColor="#000"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/solo"
+        app:layout_constraintBottom_toTopOf="@+id/tvCare"/>
+
+    <TextView
+        android:id="@+id/tvCare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dong_recommend_category2"
+        android:textSize="15sp"
+        android:textColor="#000"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvFood"
+        app:layout_constraintBottom_toTopOf="@+id/tvSenior"/>
+
+    <TextView
+        android:id="@+id/tvSenior"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dong_recommend_category3"
+        android:textSize="15sp"
+        android:textColor="#000"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCare"
+        app:layout_constraintBottom_toTopOf="@+id/tvChild" />
+
+    <TextView
+        android:id="@+id/tvChild"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dong_recommend_category4"
+        android:textSize="15sp"
+        android:textColor="#000"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSenior"
+        app:layout_constraintBottom_toTopOf="@+id/tvConvenience" />
+
+    <TextView
+        android:id="@+id/tvConvenience"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dong_recommend_category5"
+        android:textSize="15sp"
+        android:textColor="#000"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvChild"
+        app:layout_constraintBottom_toTopOf="@+id/tvPlay" />
+
+    <TextView
+        android:id="@+id/tvPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dong_recommend_category6"
+        android:textSize="15sp"
+        android:textColor="#000"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvConvenience"
+        app:layout_constraintBottom_toTopOf="@+id/view3"/>
+
+    <RatingBar
+        android:id="@+id/ratingFood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:rating="3"
+        android:stepSize="0.25"
+        app:layout_constraintLeft_toRightOf="@+id/view1"
+        app:layout_constraintTop_toBottomOf="@+id/view2"
+         />
+    <RatingBar
+        android:id="@+id/ratingCare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:rating="3"
+        android:stepSize="0.25"
+        app:layout_constraintLeft_toRightOf="@+id/view1"
+        app:layout_constraintTop_toBottomOf="@+id/ratingFood"
+        />
+    <RatingBar
+        android:id="@+id/ratingSenior"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:rating="0"
+        android:stepSize="0.25"
+        app:layout_constraintLeft_toRightOf="@+id/view1"
+        app:layout_constraintTop_toBottomOf="@+id/ratingCare"
+        />
+    <RatingBar
+        android:id="@+id/ratingChild"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:rating="5"
+        android:stepSize="0.25"
+        app:layout_constraintLeft_toRightOf="@+id/view1"
+        app:layout_constraintTop_toBottomOf="@+id/ratingSenior"
+        />
+    <RatingBar
+        android:id="@+id/ratingConvenience"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:rating="3"
+        android:stepSize="0.25"
+        app:layout_constraintLeft_toRightOf="@+id/view1"
+        app:layout_constraintTop_toBottomOf="@+id/ratingChild"
+        />
+    <RatingBar
+        android:id="@+id/ratingPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:rating="5"
+        android:stepSize="0.25"
+        app:layout_constraintLeft_toRightOf="@+id/view1"
+        app:layout_constraintTop_toBottomOf="@+id/ratingConvenience"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
