@@ -1,13 +1,17 @@
 package com.capstone.yojo
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.capstone.yojo.databinding.PlaceMapBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -54,34 +58,7 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
             tabLayout.addTab(tab)
         }
 
-        // 탭 눌렀을때 이벤트
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                val category = tab.text.toString()
 
-                updateMapMarkers(category)
-                /*  음식점 몇천개여서 제외시킴
-
-                if(category == "음식점") {
-                    mMap.clear()
-                    val places = foodMap[category] ?: return
-                    for (place in places) {
-                        val markerOptions = MarkerOptions()
-                            .position(LatLng(place.latitude!!, place.longitude!!))
-                            .title(place.name)
-                            .snippet(place.address)
-                        mMap.addMarker(markerOptions)
-                    }
-                }
-
-                 */
-
-
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
 
 
     }
@@ -89,19 +66,42 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
     private fun updateMapMarkers(category: String) {
         val places = placeMap[category] ?: return
 
-            // 탭 누를때마다 기존 마커 위에 겹치지 않게 마커 날려줌
-            mMap.clear()
+        // 탭 누를때마다 기존 마커 위에 겹치지 않게 마커 날려줌
+        mMap.clear()
 
-            // 각 탭별 새로운 마커 찍음
-            for (place in places) {
-                val markerOptions = MarkerOptions()
-                    .position(LatLng(place.latitude!!, place.longitude!!))
-                    .title(place.name)
-                    .snippet(place.address)
-                mMap.addMarker(markerOptions)
+        // 각 탭별 새로운 마커 찍음
+        for (place in places) {
+            val markerOptions = MarkerOptions()
+                .position(LatLng(place.latitude!!, place.longitude!!))
+                .title(place.name)
+                .snippet(place.address)
+
+            // 03 14 시도
+            if(category == "병원") {
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.hospital_marker))
+                // 64px 는 큰 감이 있고 32px는 작은감이 있음 48px 정도로 따로 만들면 깔끔 할 듯?
+                // 병원은 큰 병원 (병원급 이상만 다루루기..?)
             }
+            mMap.addMarker(markerOptions)
+        }
 
     }
+
+    // 03 14 시도
+    private fun getResizedBitmap(drawableId: Int, size: Int): Bitmap {
+        val drawable = ContextCompat.getDrawable(this, drawableId) ?: return Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val bitmap = (drawable as BitmapDrawable).bitmap
+        return Bitmap.createScaledBitmap(bitmap, size, size, false)
+    }
+
+    private fun getMarkerSize(zoomLevel: Float): Float {
+        return when (zoomLevel.toInt()) {
+            in 0..10 -> 50f
+            in 11..15 -> 100f
+            else -> 150f
+        }
+    }
+    // 시도한거 작동 안함... 수정필요
 
 
     // 장소들 가져오기 (placeMap)
@@ -126,6 +126,24 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        // 기존 코드는 동네시설 화면 들어갔을때 첫 탭 아이템에 마커 미출력됨
+        // 첫번째 탭 선택시키고 마커 찍도록 코드 수정. (지도 초기화 된 후 생성해야하므로 onMapReady 에 작성)
+        val firstCategory = placeMap.keys.firstOrNull()
+        val firstTab = tabLayout.getTabAt(placeMap.keys.indexOf(firstCategory)) ?: return
+        tabLayout.selectTab(firstTab)
+        firstCategory?.let { updateMapMarkers(it) }
+
+        // 나머지 탭들 클릭이벤트 (마커 update )
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                val category = tab.text.toString()
+                updateMapMarkers(category)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(yeonsu))
 
@@ -135,6 +153,13 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
         val cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition)
 
         googleMap.moveCamera(cameraUpdate)
+
+        // 03 14 시도
+        // 줌 레벨 변경 이벤트 처리 (>> 작동안함)
+        mMap.setOnCameraIdleListener {
+            val category = tabLayout.getTabAt(tabLayout.selectedTabPosition)?.text.toString()
+            updateMapMarkers(category)
+        }
 
     }
 }
