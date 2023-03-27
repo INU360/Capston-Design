@@ -4,29 +4,26 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.capstone.yojo.databinding.BottomListItemListBinding
+import androidx.core.view.isVisible
+import androidx.lifecycle.MutableLiveData
 import com.capstone.yojo.databinding.BottomSheetBinding
 import com.capstone.yojo.databinding.HouseMapBinding
+import com.capstone.yojo.model.MarkerData
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import java.util.*
-import kotlin.collections.ArrayList
 
 class HouseMap : AppCompatActivity(), OnMapReadyCallback {
-
 
     //private  var mMap: GoogleMap? = null
     private lateinit var mMap: GoogleMap
@@ -37,369 +34,245 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
 
     var houseType = "" //사용자가 선택한 매물 유형(아파트 or 오피스텔)을 담을 변수
 
-    //02.14 메인에서 오피스텔 리스트들 가져오기
-    //var OpiMarkerList = arrayListOf<OpiMarkerData>()
-    //var OpiLatLngList = arrayListOf<LatLng>()
-
     // 오피스텔 마커 추가
-    private lateinit var addedOpiMarker: Marker
-    private var addedOpiMarkerList = mutableListOf<Marker>()
+    private val filteredMarkerDataList = MutableLiveData<List<MarkerData>>() //마커를 찍을 데이터를 저장하는 리스트
 
-    // 아파트 마커 추가
-    private lateinit var addedAptMarker: Marker
-    private var addedAptMarkerList = mutableListOf<Marker>()
-
-    // 02.08
-    // 카드뷰 변수 선언
-    private lateinit var cardView: View
-
-    // 02.08 21:02 마커 클릭이벤트에서 빼온거
-    private var keyValue: String? = null
-
-    // 02. 08 20:48 load 함수에서 빼온거
+    // 03 19 아파트 마커 추가
+    private val filteredAptMarkerDataList = MutableLiveData<List<MarkerData>>() //마커를 찍을 데이터를 저장하는 리스트
 
     // 건물명을 키값으로 가지고, 해당 건물의 이름,주소,위도,경도 저장함
-    private var infoMap = mutableMapOf<String, MutableList<SaveWishData>>()
-
-    // 마커 찍기용 데이터 들어있음 (이름, 주소, 위도, 경도 등등)
-    private var opiMarkerList : ArrayList<OpiMarkerData> = ArrayList()
-    private var aptMarkerList : ArrayList<OpiMarkerData> = ArrayList()
-
-    // 거래유형 / 면적 /  가격 / 층 정보가  key : value 형태로 저장되어있음
-    private var detailsMap: HashMap<String, MutableList<DetailsData>> = HashMap()
-    private var detailsAptMap: HashMap<String, MutableList<DetailsData>> = HashMap()
-
-
-
-    // 02. 12 어댑터 바인딩 위해 선언
-    private lateinit var bSheetBinding: BottomSheetBinding
-    //private lateinit var bListBinding : BottomListItemListBinding
-
-    // 대표 마커 (오피스텔 또는 아파트 위치 찍는 마커) 의 정보 [이름, 주소, 위도, 경도] 담아서 어댑터로 보냄
-    val saveList : ArrayList<SaveWishData> = ArrayList()
-
-    // 02. 12 위시리스트 버튼 0 , 1 값 지정 위해
-    //var imgIndex = 0
-
     private val yeonsu = LatLng(37.410097, 126.678560)
 
-
-
+    //
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         /* 바인딩 생성 */
         mbinding = HouseMapBinding.inflate(layoutInflater)
 
+        // 처음 들어갔을때 카드뷰 숨김 03. 19
+        hideCardView()
+
         /* MainActivity에서 사용자가 선택한 매물 유형 값(아파트 or 오피스텔) 가져옴 */
         houseType = intent.getStringExtra("houseType").toString()
 
         // SharedPreferences 에 저장된 opiMarkerList 가져옴
-        opiMarkerList = loadOpiMarkerList()
-        aptMarkerList = loadAptMarkerList()
+        // TODO: 아파트로 할 경우 아파트 데이터를 로드해야 함
+        filteredMarkerDataList.value = loadOpiMarkerDataList()
 
-        // SharedPreferences 에 저장된 detailsMap 가져옴
-        detailsMap = loadDetailsMap() ?: hashMapOf()
-        detailsAptMap = loadDetailsAptMap() ?: hashMapOf()
+        // 03 19 SharedPreferences 에 저장된 aptMarkerList 가져옴
+        filteredAptMarkerDataList.value = loadAptMarkerDataList()
 
 
-        val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
+        val mapFragment: SupportMapFragment =
+            supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         (supportFragmentManager.findFragmentById(R.id.mapView) as
                 SupportMapFragment?)!!.getMapAsync(this)
         setContentView(binding.root)
 
-        cardView = findViewById(R.id.cardview)
-        //초기 구동시 카드뷰 안보인채로
-        cardView.visibility = View.GONE
-
-        // 카드뷰에 온클릭 리스너 적용해서 bottom_sheet가 아닌
-        // 다른 액티비티 호출하는게 나을듯
-        // 여기서 클릭했을 때 배열 키값과 마커 키값 비교후 같은거 리스트뷰에추가
-        cardView.setOnClickListener {
-            if(houseType == "오피스텔") {
-                getOpiData(keyValue)
-            }
-            else {
-                getAptData(keyValue)
+        with(binding) {
+            btnFilter.setOnClickListener {
+                val intent = Intent(this@HouseMap, HouseFilter::class.java) //필터화면으로 이동
+                startActivityForResult(intent, 10) //HouseFilter에서 값 가져오면 함수 호출
             }
         }
 
-        /* 필터 버튼 클릭 이벤트 - 화면 변환 (양방향 전달)  */
-        binding.btnFilter.setOnClickListener {
-            val intent = Intent(this, HouseFilter::class.java) //필터화면으로 이동
-            startActivityForResult(intent,10) //HouseFilter에서 값 가져오면 함수 호출
+        // filteredMarkerDataList 값이 변경될 때마다 addMarkers 함수를 호출하도록 Observer 등록
+        filteredMarkerDataList.observe(this) {
+            addMarkers(it)
         }
 
+        filteredAptMarkerDataList.observe(this) {
+            addMarkers(it)
+        }
     } //onCreate 끝
 
     // 저장된 오피스텔 마커리스트 가져오기
-    fun loadOpiMarkerList(): ArrayList<OpiMarkerData> {
+    private fun loadOpiMarkerDataList(): List<MarkerData> {
         val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
         val json = prefs.getString("opi_marker_list", null)
-        val type = object : TypeToken<ArrayList<OpiMarkerData>>() {}.type
+        val type = object : TypeToken<ArrayList<MarkerData>>() {}.type
         return Gson().fromJson(json, type)
     }
 
-    // 저장된 아파트 마커리스트 가져오기
-    fun loadAptMarkerList(): ArrayList<OpiMarkerData> {
+    // 03 19 저장된 아파트 마커리스트 가져오기
+    private fun loadAptMarkerDataList(): List<MarkerData> {
         val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
         val json = prefs.getString("apt_marker_list", null)
-        val type = object : TypeToken<ArrayList<OpiMarkerData>>() {}.type
+        val type = object : TypeToken<ArrayList<MarkerData>>() {}.type
         return Gson().fromJson(json, type)
     }
 
+    /**
+     * 맵에 마커를 추가한다.
+     */
+    private fun addMarkers(markerDataList: List<MarkerData>) {
+        if (!this::mMap.isInitialized) return
 
+        mMap.clear()
 
-    // 오피스텔 detailsMap 가져오기
-    fun loadDetailsMap(): HashMap<String, MutableList<DetailsData>>? {
-        val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
-        val json = prefs.getString("details_map", null)
-        val type = object : TypeToken<HashMap<String, MutableList<DetailsData>>>() {}.type
-        return Gson().fromJson(json, type)
-    }
+        for (markerData in markerDataList) {
+            val markerOptions = MarkerOptions()
+            markerOptions.position(LatLng(markerData.latitude, markerData.longitude))
 
-  // 아파트 detailsAptMap 가져오기
-  fun loadDetailsAptMap(): HashMap<String, MutableList<DetailsData>>? {
-      val prefs = getSharedPreferences("my_pref", Context.MODE_PRIVATE)
-      val json = prefs.getString("details_apt_map", null)
-      val type = object : TypeToken<HashMap<String, MutableList<DetailsData>>>() {}.type
-      return Gson().fromJson(json, type)
-  }
-
-
-
-
-    private fun addOpiMarker(opiMarkerList:ArrayList<OpiMarkerData>?) {
-        if (opiMarkerList != null) {
-            for (markerData in opiMarkerList) {
-                val marker = MarkerOptions()
-                marker.position(LatLng(markerData.latitude!!, markerData.longitude!!))
-                addedOpiMarker = mMap.addMarker(marker)!! // addedMarker 이라는 변수는 지도에 마커 추가하는 변수
-                addedOpiMarker.isVisible = true
-                addedOpiMarker.tag = markerData
-
-                addedOpiMarkerList.add(addedOpiMarker) // 위에서 선언한 addedMarkerList 에 추가한 마커들을 담음
-
-            }
+            val marker = mMap.addMarker(markerOptions)!! // addedMarker 이라는 변수는 지도에 마커 추가하는 변수
+            marker.isVisible = true
+            marker.tag = markerData
         }
-
     }
 
-    private fun addAptMarker(aptMarkerList:ArrayList<OpiMarkerData>?) {
-        if (aptMarkerList != null) {
-            for (markerData in aptMarkerList) {
-                val marker = MarkerOptions()
-                marker.position(LatLng(markerData.latitude!!, markerData.longitude!!))
-                addedAptMarker = mMap.addMarker(marker)!!
-                addedAptMarker.isVisible = true
-                addedAptMarker.tag = markerData
+    /**
+     * 마커 클릭시 CardView 를 보여주고, CardView 클릭시 BottomSheet 가 나오도록 Click listener 를 설정한다.
+     */
+    private fun showCardView(data: MarkerData) = with(binding) {
+        name.text = data.name
+        address.text = data.address
 
-                addedAptMarkerList.add(addedAptMarker)
+        cardview.isVisible = true
+        cardview.setOnClickListener {
+            // bottomSheet 리스트뷰에 띄워줌
+            val bottomSheetDialog = BottomSheetDialog(this@HouseMap)
 
-            }
+            val bottomSheetBinging = BottomSheetBinding.inflate(layoutInflater)
+
+            val adapter = ListViewAdapter(this@HouseMap, data)
+            val listView = bottomSheetBinging.listView
+            listView.adapter = adapter
+
+            // 리스트뷰 내용 보여줌
+            bottomSheetDialog.setContentView(bottomSheetBinging.root)
+            bottomSheetDialog.show()
         }
-
     }
 
-
-    fun getOpiData(keyValue: String?) {
-        val list = ArrayList<String>()
-        val showDetails = detailsMap[keyValue]
-        val mSquare = "\u33a1" // 제곱미터 특수문자 사용
-        val enter = "\n" // 줄바꿈
-
-
-
-
-        for (k in showDetails!!) {
-            val putType = k.type
-            val putSize = k.size
-            val putPrice = k.price
-            val putFloor = k.floor
-            val putDate = k.date
-            val putDeposit = k.deposit
-            val putMonthly = k.monthly
-
-            if(putPrice != 0L) {
-                val addText = " $putType / $putSize $mSquare / $putFloor 층 $enter $putPrice 만원 $enter 계약년월 : $putDate "
-
-                list.add(addText)
-            }
-            else if(putMonthly == 0L) {
-                val addText = " $putType / $putSize $mSquare / $putFloor 층 $enter $putDeposit 만원 $enter 계약년월 : $putDate "
-
-                list.add(addText)
-            }
-            else {
-                val addText = " $putType / $putSize $mSquare / $putFloor 층 $enter $putDeposit / $putMonthly $enter 계약년월 : $putDate"
-
-                list.add(addText)
-            }
-        }
-
-        /* 여기서 쌓인 정보들을 토대로 리스트뷰 값들의 내용 (list에 해당하는것 + 마커의 정보 [이름,주소,위도,경도]) 를 보내
-           해당 포지션의 리스트뷰의 하트 버튼이 클릭되면 writeFirebase 함수에 널값이 아닌 제대로된 값들을 다이렉트로 전달시킴
-           >> ListViewAdatper 클래스에서 처리함.
-         */
-
-
-        // bottomSheet 리스트뷰에 띄워줌
-        val bottomSheetDialog = BottomSheetDialog(this)
-
-        //val bottomSheetView = LayoutInflater.from(applicationContext).inflate(R.layout.bottom_sheet, null)
-
-        bSheetBinding = BottomSheetBinding.inflate(layoutInflater)
-
-        val adapter = ListViewAdapter(this, list, infoMap, keyValue, bottomSheetDialog)
-        val listView = bSheetBinding.listView
-        listView.adapter = adapter
-        adapter.notifyDataSetChanged()
-
-
-        // 리스트뷰 내용 보여줌
-        bottomSheetDialog.setContentView(bSheetBinding.root)
-        bottomSheetDialog.show()
-
-
+    /**
+     * CardView 를 숨긴다.
+     */
+    private fun hideCardView() = with(binding.cardview) {
+        isVisible = false
+        setOnClickListener(null)
     }
 
-    fun getAptData(keyValue: String?) {
-        val list = ArrayList<String>()
-        val showDetails = detailsAptMap[keyValue]
-        val mSquare = "\u33a1" // 제곱미터 특수문자 사용
-        val enter = "\n" // 줄바꿈
-
-
-
-
-        for (k in showDetails!!) {
-            val putType = k.type
-            val putSize = k.size
-            val putPrice = k.price
-            val putFloor = k.floor
-            val putDate = k.date
-            val putDeposit = k.deposit
-            val putMonthly = k.monthly
-
-            if(putPrice != 0L) {
-                val addText = " $putType / $putSize $mSquare / $putFloor 층 $enter $putPrice 만원 $enter 계약년월 : $putDate "
-
-                list.add(addText)
-            }
-            else if(putMonthly == 0L) {
-                val addText = " $putType / $putSize $mSquare / $putFloor 층 $enter $putDeposit 만원 $enter 계약년월 : $putDate "
-
-                list.add(addText)
-            }
-            else {
-                val addText = " $putType / $putSize $mSquare / $putFloor 층 $enter $putDeposit / $putMonthly $enter 계약년월 : $putDate"
-
-                list.add(addText)
-            }
-        }
-
-        /* 여기서 쌓인 정보들을 토대로 리스트뷰 값들의 내용 (list에 해당하는것 + 마커의 정보 [이름,주소,위도,경도]) 를 보내
-           해당 포지션의 리스트뷰의 하트 버튼이 클릭되면 writeFirebase 함수에 널값이 아닌 제대로된 값들을 다이렉트로 전달시킴
-           >> ListViewAdatper 클래스에서 처리함.
-         */
-
-
-        // bottomSheet 리스트뷰에 띄워줌
-        val bottomSheetDialog = BottomSheetDialog(this)
-
-        //val bottomSheetView = LayoutInflater.from(applicationContext).inflate(R.layout.bottom_sheet, null)
-
-        bSheetBinding = BottomSheetBinding.inflate(layoutInflater)
-
-        val adapter = ListViewAdapter(this, list, infoMap, keyValue, bottomSheetDialog)
-        val listView = bSheetBinding.listView
-        listView.adapter = adapter
-        adapter.notifyDataSetChanged()
-
-
-        // 리스트뷰 내용 보여줌
-        bottomSheetDialog.setContentView(bSheetBinding.root)
-        bottomSheetDialog.show()
-
-
-    }
-
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
-
         mMap = googleMap
 
         // mMap 이 초기화 된 후에 동작해야하므로 마커 찍는 이벤트 등 지도관련은 여기서 처리함.
-        if(houseType == "오피스텔") {
+        if (houseType == "오피스텔") {
+            addMarkers(filteredMarkerDataList.value ?: listOf<MarkerData>())
 
-            addOpiMarker(opiMarkerList)
+        } else { // 아파트일때
+            addMarkers(filteredAptMarkerDataList.value ?: listOf<MarkerData>())
         }
-
-        else {
-            addAptMarker(aptMarkerList)
-        }
-
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(yeonsu))
 
         // 카메라 이동하기
         val cameraPosition = CameraPosition.builder().target(yeonsu).zoom(12.0f).zoom(12.0f).build()
-
         val cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition)
-
         googleMap.moveCamera(cameraUpdate)
 
-
         googleMap.setOnMarkerClickListener { marker ->
-
-            cardView.visibility = View.VISIBLE
-            val markerName = findViewById<TextView>(R.id.name)
-            val markerAddress = findViewById<TextView>(R.id.address)
-
-            val markerData = marker.tag as OpiMarkerData
-            markerName.text = markerData.name
-            markerAddress.text = markerData.address
-
-            val saveName = markerData.name
-            val saveAddress = markerData.address
-            val saveLat = markerData.latitude
-            val saveLon = markerData.longitude
-
-            // 전역으로 선언
-            keyValue = markerData.keyValue
-            saveList.add(SaveWishData(saveName, saveAddress, saveLat, saveLon))
-            infoMap[keyValue!!] = saveList
-
+            val data = marker.tag as? MarkerData ?: return@setOnMarkerClickListener false
+            showCardView(data)
             false
         }
 
-    // 02. 08
-    //마커 클릭해서 카드뷰 띄우고 맵 클릭했을 때 카드뷰 없앰
-    googleMap.setOnMapClickListener { cardView.visibility = View.GONE }
-
+        // 02. 08
+        //마커 클릭해서 카드뷰 띄우고 맵 클릭했을 때 카드뷰 없앰
+        googleMap.setOnMapClickListener { hideCardView() }
     }
 
-/* houseFilter 화면에서 사용자가 선택한 값들 가져와 이벤트 처리 */
-@SuppressLint("ResourceAsColor")
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-super.onActivityResult(requestCode, resultCode, data)
-var resultType = data?.getStringExtra("resultType") //사용자가 선택한 거래유형
-var resultArea = data?.getStringExtra("resultArea") //사용자가 선택한 면적
-var resultYear = data?.getStringExtra("resultYear") //사용자가 선택한 준공년도
-var resultPriceStart = data?.getStringExtra("resultPriceStart") //사용자가 입력한 최소금액(단위:만원)
-var resultPriceFinish = data?.getStringExtra("resultPriceFinish") //사용자가 입력한 최대금액(단위:만원)
-var result = houseType + "/" + resultPriceStart +"~" + resultPriceFinish + "만원/" + resultType + "/" + resultArea + "/" + resultYear
+    /* houseFilter 화면에서 사용자가 선택한 값들 가져와 이벤트 처리 */
+    @SuppressLint("ResourceAsColor")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val resultType = data?.getStringExtra("resultType") //사용자가 선택한 거래유형
+        val resultArea = data?.getStringExtra("resultArea") //사용자가 선택한 면적
+        val resultYear = data?.getStringExtra("resultYear") //사용자가 선택한 준공년도
+        val resultPriceStart = data?.getStringExtra("resultPriceStart") //사용자가 입력한 최소금액(단위:만원)
+        val resultPriceFinish = data?.getStringExtra("resultPriceFinish") //사용자가 입력한 최대금액(단위:만원)
+        val result =
+            houseType + "/" + resultPriceStart + "~" + resultPriceFinish + "만원/" + resultType + "/" + resultArea + "/" + resultYear
 
+        // TODO: 아파트로 할 경우 아파트 데이터를 로드해야 함 아직은 파베 안 올렸으니까...
+        var filteredDataList: List<MarkerData>  //필터링 한 데이터를 저장할 리스트
 
+        // 03. 19 오피스텔일때 아파트일때 구분
+        if (houseType == "오피스텔") {
+            filteredDataList = ArrayList(loadOpiMarkerDataList()) //필터링 한 데이터를 저장할 리스트
 
+        } else { // 아파트일때
+            filteredDataList = ArrayList(loadAptMarkerDataList()) //필터링 한 데이터를 저장할 리스트
+        }
 
+        // 준공 년도 필터
+        if (resultYear != "전체") {
+            // Exclusive
+            val max = when (resultArea) {
+                "5년 이내" -> 5
+                "10년 이내" -> 10
+                else -> 20
+            }
 
-// 필터링 된 값으로 검색 버튼 텍스트 변경
-binding.btnSearch.setTextColor(ContextCompat.getColor(applicationContext!!,R.color.black))
-binding.btnSearch.setText(result)
+            filteredDataList = filteredDataList.filter { it.build <= max } //filter 키워드 사용
+        }
 
-}
+        // 매매, 전세, 월세 필터 타입 기록
+        filteredDataList = filteredDataList.filter { it.details.any { it.type == resultType } }
+        filteredDataList.forEach {
+            it.details = it.details.filter { it.type == resultType }
+        }
 
+        // 면적 필터
+        if (resultArea != "전체") {
+            // Inclusive
+            var min: Double = when (resultArea) {
+                "10평대" -> 10.0
+                "20평대" -> 20.0
+                "30평대" -> 30.0
+                "40평대" -> 40.0
+                else -> 50.0
+            }
 
+            // 최대 설정 10평대니까 +10 해서 설정..
+            var max: Double = min + 10
+
+            // 평수를 제곱미터로 전환
+            min *= 3.3058
+            max *= 3.3058
+
+            filteredDataList.forEach {
+                it.details = it.details.filter { it.size >= min && it.size < max } //평수 필터링
+            }
+        }
+
+        // 가격 필터
+        val minPrice = resultPriceStart?.toIntOrNull() ?: 0
+        val maxPrice = resultPriceFinish?.toIntOrNull() ?: 0
+
+        //일단은 매매는 가격으로 설정했고(price) 전세랑 월세는 파베에 deposit로 다른걸로 묶임
+        if (minPrice < maxPrice) {
+            if (resultType == "매매") {
+                filteredDataList.forEach {
+                    it.details = it.details.filter { it.price in minPrice..maxPrice }
+                }
+            } else {
+                filteredDataList.forEach {
+                    it.details = it.details.filter { it.deposit in minPrice..maxPrice }
+                }
+            }
+        }
+
+        filteredDataList = filteredDataList.filter { it.details.isNotEmpty() } //공백 아닐때 저장
+        filteredMarkerDataList.value = filteredDataList //필터링 한 데이터를 저장하여 마커를 찍는 리스트에 저장완료.
+
+        // 필터링 된 값으로 검색 버튼 텍스트 변경
+        binding.btnSearch.setTextColor(ContextCompat.getColor(applicationContext!!, R.color.black))
+        binding.btnSearch.text = result
+
+        hideCardView()
+    }
 }
 
