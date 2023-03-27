@@ -5,44 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/btnWhole"
-        android:layout_width="70sp"
-        android:layout_height="30sp"
-        android:layout_marginTop="30sp"
-        android:layout_marginLeft="30sp"
-        android:background="@drawable/round_edge_btn_blue"
-        android:text="@string/crime_name1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        tools:ignore="MissingConstraints" />
 
-    <EditText
-        android:id="@+id/editDong"
-        android:layout_width="200sp"
-        android:layout_height="30sp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/round_edge_btn_blue"
-        android:hint="  ex) 연수동"
-        android:textColorHint="@color/colorHint"
-        android:textSize="13sp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/imgSearch"
-        android:layout_width="30sp"
-        android:layout_height="30sp"
-        android:src="@drawable/search"
-        app:layout_constraintRight_toRightOf="@+id/editDong"
-        app:layout_constraintTop_toTopOf="@+id/editDong"
-        app:layout_constraintBottom_toBottomOf="@+id/editDong"/>
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_marginTop="90sp"
+        android:layout_marginTop="30sp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
