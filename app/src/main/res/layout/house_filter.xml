@@ -7,7 +7,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout1"
-        android:layout_width="350sp"
+        android:layout_width="330sp"
         android:layout_height="100sp"
         android:background="#fff"
         android:layout_marginTop="30sp"
@@ -69,7 +69,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout2"
-        android:layout_width="350sp"
+        android:layout_width="330sp"
         android:layout_height="80sp"
         android:background="#fff"
         android:layout_marginTop="30sp"
@@ -131,7 +131,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout3"
-        android:layout_width="350sp"
+        android:layout_width="330sp"
         android:layout_height="140sp"
         android:background="#fff"
         android:layout_marginTop="30sp"
@@ -220,7 +220,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout4"
-        android:layout_width="350sp"
+        android:layout_width="330sp"
         android:layout_height="80sp"
         android:background="#fff"
         android:layout_marginTop="30sp"
@@ -282,7 +282,7 @@
     <Button
         android:id="@+id/btnOk"
         android:layout_width="match_parent"
-        android:layout_height="70sp"
+        android:layout_height="50sp"
         android:background="@color/colorMain"
         android:text="적용"
         android:textSize="20sp"

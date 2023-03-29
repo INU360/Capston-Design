@@ -8,23 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:ignore="MissingClass">
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/home2" />
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/heart2"/>
-    </com.google.android.material.tabs.TabLayout>
+
     <ScrollView xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/bio_scroll"
         android:layout_width="match_parent"
@@ -44,7 +28,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout1"
-                android:layout_width="350sp"
+                android:layout_width="330sp"
                 android:layout_height="wrap_content"
                 android:background="#fff"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -60,7 +44,7 @@
                     android:paddingBottom="20sp"
                     android:text="@string/main_name1"
                     android:textSize="20sp"
-                    android:textColor="#000"
+                    android:textColor="@color/colorMain"
                     android:textStyle="bold"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -69,7 +53,7 @@
                     android:src="@drawable/apt2"
                     android:textColor="#000"
                     android:textStyle="bold"
-                    android:layout_width="175sp"
+                    android:layout_width="165sp"
                     android:layout_height="100sp"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_main_name1"/>
@@ -87,7 +71,7 @@
                 <ImageView
                     android:id="@+id/btnOpi"
                     android:src="@drawable/opi2"
-                    android:layout_width="175sp"
+                    android:layout_width="165sp"
                     android:layout_height="100sp"
                     app:layout_constraintLeft_toRightOf="@+id/btnApt"
                     app:layout_constraintBottom_toBottomOf="parent"/>
@@ -113,8 +97,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout2"
-                android:layout_width="350sp"
-                android:layout_height="110sp"
+                android:layout_width="330sp"
+                android:layout_height="120sp"
                 android:background="#fff"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -128,16 +112,16 @@
                     android:paddingBottom="20sp"
                     android:text="@string/main_name2"
                     android:textSize="20sp"
-                    android:textColor="#000"
+                    android:textColor="@color/colorMain"
                     android:textStyle="bold"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
                 <Button
                     android:id="@+id/btnPlace"
-                    android:layout_width="350sp"
-                    android:layout_height="50sp"
+                    android:layout_width="330sp"
+                    android:layout_height="60sp"
                     android:background="@drawable/round_edge_btn"
-                    android:drawableRight="@drawable/location"
+                    android:drawableRight="@drawable/location_img"
                     android:paddingRight="20sp"
                     android:paddingLeft="20sp"
                     android:gravity="left|center"
@@ -158,8 +142,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout3"
-                android:layout_width="350sp"
-                android:layout_height="270sp"
+                android:layout_width="330sp"
+                android:layout_height="300sp"
                 android:background="#fff"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -173,17 +157,17 @@
                     android:paddingBottom="20sp"
                     android:text="@string/main_name3"
                     android:textSize="20sp"
-                    android:textColor="#000"
+                    android:textColor="@color/colorMain"
                     android:textStyle="bold"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/btnRecommend"
-                    android:layout_width="350sp"
-                    android:layout_height="50sp"
+                    android:layout_width="330sp"
+                    android:layout_height="60sp"
                     android:background="@drawable/round_edge_btn"
-                    android:drawableRight="@drawable/like"
+                    android:drawableRight="@drawable/recommendation_img"
                     android:paddingRight="20sp"
                     android:paddingLeft="20sp"
                     android:gravity="left|center"
@@ -192,12 +176,13 @@
                     android:textStyle="bold"
                     app:layout_constraintTop_toBottomOf="@id/tv_main_name3"
                     app:layout_constraintRight_toRightOf="parent" />
+
                 <Button
                     android:id="@+id/btnComp"
-                    android:layout_width="350sp"
-                    android:layout_height="50sp"
+                    android:layout_width="330sp"
+                    android:layout_height="60sp"
                     android:background="@drawable/round_edge_btn"
-                    android:drawableRight="@drawable/trend"
+                    android:drawableRight="@drawable/graph_img"
                     android:paddingRight="20sp"
                     android:paddingLeft="20sp"
                     android:gravity="left|center"
@@ -209,10 +194,10 @@
                     app:layout_constraintRight_toRightOf="parent" />
                 <Button
                     android:id="@+id/btnCrime"
-                    android:layout_width="350sp"
-                    android:layout_height="50sp"
+                    android:layout_width="330sp"
+                    android:layout_height="60sp"
                     android:background="@drawable/round_edge_btn"
-                    android:drawableRight="@drawable/profile"
+                    android:drawableRight="@drawable/crime_img"
                     android:paddingRight="20sp"
                     android:paddingLeft="20sp"
                     android:gravity="left|center"
@@ -227,7 +212,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout4"
                 android:layout_width="350sp"
-                android:layout_height="60sp"
+                android:layout_height="10sp"
                 android:background="#fff"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"

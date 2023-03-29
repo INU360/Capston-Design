@@ -31,8 +31,8 @@ class MainActivity : AppCompatActivity(){
         val tabLayout = binding.tabs
         adapter = FragmentPageAdapter(supportFragmentManager, lifecycle)
 
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.home))
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.heart))
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.home_img))
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.hearts_img))
 
         viewPager.adapter = adapter
 

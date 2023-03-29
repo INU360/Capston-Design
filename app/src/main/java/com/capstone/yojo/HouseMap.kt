@@ -275,4 +275,3 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
         hideCardView()
     }
 }
-

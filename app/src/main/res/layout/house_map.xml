@@ -73,11 +73,11 @@
                     android:layout_width="375dp"
                     android:layout_height="45dp"
 
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="5dp"
                     android:gravity="center"
                     android:text="@string/card_view_title"
-                    android:textColor="#000000"
-                    android:textSize="9pt"
+                    android:textColor="@color/colorMain"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
 
@@ -87,7 +87,7 @@
                     android:layout_height="25dp"
                     android:gravity="center"
                     android:textColor="#000000"
-                    android:textSize="9pt"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -96,8 +96,8 @@
                     android:layout_height="25dp"
                     android:layout_marginTop="5dp"
                     android:gravity="center"
-                    android:textColor="#000000"
-                    android:textSize="8pt"
+                    android:textColor="@color/colorHint"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
             </LinearLayout>

@@ -17,23 +17,26 @@
             android:id="@+id/name_wish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:textStyle="bold"
-            android:textSize="24sp"/>
+            android:textColor="@color/colorMain"
+            android:textSize="20sp"/>
 
         <TextView
             android:id="@+id/address_wish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:textSize="20sp"/>
+            android:textColor="#000"
+            android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/detail_wish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:textSize="20sp"/>
+            android:textColor="#000"
+            android:textSize="15sp"/>
 
     </LinearLayout>
 
@@ -49,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#ffffff"
-            android:layout_marginEnd="30dp"
+            android:layout_marginEnd="20dp"
             android:gravity="right"
             android:src="@drawable/clear"
             />
