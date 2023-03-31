@@ -18,11 +18,15 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.tabs.TabLayout
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import com.google.maps.android.clustering.ClusterItem
+import com.google.maps.android.clustering.ClusterManager
+
 
 class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
 
     /* 바인딩 전역 변수 선언 */
     private lateinit var mMap: GoogleMap
+    private lateinit var mClusterManager: ClusterManager<MapItem>
     private lateinit var tabLayout: TabLayout
 
     private var mbinding: PlaceMapBinding? = null
@@ -63,45 +67,36 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
+    // 마커 클러스터링 update
     private fun updateMapMarkers(category: String) {
         val places = placeMap[category] ?: return
 
-        // 탭 누를때마다 기존 마커 위에 겹치지 않게 마커 날려줌
         mMap.clear()
+        mClusterManager.clearItems()
 
-        // 각 탭별 새로운 마커 찍음
         for (place in places) {
-            val markerOptions = MarkerOptions()
-                .position(LatLng(place.latitude!!, place.longitude!!))
-                .title(place.name)
-                .snippet(place.address)
+            val latlng = LatLng(place.latitude!!, place.longitude!!)
+            val myItem = MapItem(latlng, place.name!!, place.address!!, category)
 
-            // 03 14 시도
-            if(category == "병원") {
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.hospital_marker))
-                // 64px 는 큰 감이 있고 32px는 작은감이 있음 48px 정도로 따로 만들면 깔끔 할 듯?
-                // 병원은 큰 병원 (병원급 이상만 다루루기..?)
-            }
-            mMap.addMarker(markerOptions)
+
+            mClusterManager.addItem(myItem)
         }
 
+        mClusterManager.cluster()
     }
 
-    // 03 14 시도
-    private fun getResizedBitmap(drawableId: Int, size: Int): Bitmap {
-        val drawable = ContextCompat.getDrawable(this, drawableId) ?: return Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        val bitmap = (drawable as BitmapDrawable).bitmap
-        return Bitmap.createScaledBitmap(bitmap, size, size, false)
+
+    private fun setUpClusterManager() {
+        mClusterManager = ClusterManager(this, mMap)
+
+        val renderer = CustomClusterRenderer(this, mMap, mClusterManager)
+        mClusterManager.renderer = renderer
+
+        mMap.setOnCameraIdleListener(mClusterManager)
+        mMap.setOnMarkerClickListener(mClusterManager)
+        mMap.setOnInfoWindowClickListener(mClusterManager)
     }
 
-    private fun getMarkerSize(zoomLevel: Float): Float {
-        return when (zoomLevel.toInt()) {
-            in 0..10 -> 50f
-            in 11..15 -> 100f
-            else -> 150f
-        }
-    }
-    // 시도한거 작동 안함... 수정필요
 
 
     // 장소들 가져오기 (placeMap)
@@ -125,6 +120,8 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        setUpClusterManager()
+
 
         // 기존 코드는 동네시설 화면 들어갔을때 첫 탭 아이템에 마커 미출력됨
         // 첫번째 탭 선택시키고 마커 찍도록 코드 수정. (지도 초기화 된 후 생성해야하므로 onMapReady 에 작성)
@@ -133,11 +130,13 @@ class PlaceMap : AppCompatActivity(), OnMapReadyCallback {
         tabLayout.selectTab(firstTab)
         firstCategory?.let { updateMapMarkers(it) }
 
+
         // 나머지 탭들 클릭이벤트 (마커 update )
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 val category = tab.text.toString()
                 updateMapMarkers(category)
+
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
