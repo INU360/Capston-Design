@@ -63,3 +63,36 @@ class DongCompare : AppCompatActivity() {
         "연수동은 노인복지시설과 의료기관이 동 평균에 비해 많이 분포되어 있습니다. 청소년 유해시설이 3번째로 많은 동입니다.",
         "선학동은 모든 시설이 동 평균에 비해 적게 분포하고 있습니다. 청소년 유해 시설은 1개로 동평균(18곳)에 비해 적게 분포합니다."
     )
+ override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 동네추천 화면에서 추천받은 동네 받아오기
+        val result = intent.getStringExtra("result")
+
+        // 바인딩 선언
+        setContentView(binding.root)
+
+        initUi(result?.toIntOrNull() ?: 0)
+    }
+
+    /**
+     * 뷰 초기화
+     */
+    private fun initUi(initIndex: Int) {
+        bindingDong.forEach {
+            it.setOnClickListener { view ->
+                bindingDong.forEachIndexed { index, button ->
+                    if (button == view) {
+                        button.setBackgroundResource(R.drawable.round_btn_blue2)
+                        button.setTextColor(Color.WHITE)
+                        binding.content.text = descriptions[index]
+                        binding.hashTag.text = tags[index]
+                        loadChart(index)
+
+                    } else {
+                        button.setBackgroundResource(R.drawable.round_edge_btn_blue)
+                        button.setTextColor(resources.getColor(R.color.colorMain))
+                    }
+                }
+            }
+        }
