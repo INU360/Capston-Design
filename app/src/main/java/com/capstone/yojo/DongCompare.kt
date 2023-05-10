@@ -96,3 +96,58 @@ class DongCompare : AppCompatActivity() {
                 }
             }
         }
+           // 차트 초기화
+        with(binding.graph) {
+            description.isEnabled = false
+            extraBottomOffset = 10f
+
+            // 범례
+            with(legend) {
+                verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
+                horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+                orientation = Legend.LegendOrientation.HORIZONTAL
+                setDrawInside(false)
+            }
+
+            // x 축
+            with(xAxis) {
+                axisMinimum = 0f
+                axisMaximum = 6f
+                granularity = 1f
+                textColor = ContextCompat.getColor(this@DongCompare, R.color.colorMain)
+                textSize = 10f
+                setCenterAxisLabels(true)
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+                position = XAxis.XAxisPosition.BOTTOM
+                valueFormatter = object : ValueFormatter() {
+                    override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+                        return when (value.toInt()) {
+                            0 -> "교육"
+                            1 -> "노인복지"
+                            2 -> "놀이시설"
+                            3 -> "쇼핑"
+                            4 -> "편의시설"
+                            else -> "의료시설"
+                        }
+                    }
+                }
+            }
+
+            with(axisLeft) {
+                axisMinimum = 0f // this replaces setStartAtZero(true)
+                granularity = 0.1f
+                textSize = 10f
+                setDrawGridLines(true)
+                setDrawZeroLine(false)
+                setDrawAxisLine(false)
+            }
+
+            axisRight.isEnabled = false
+        }
+
+        // performClick 함수 호출시, 해당 뷰에 설정된 OnClickListener 가 호출됨
+        bindingDong.getOrNull(initIndex)?.performClick()
+    }
+
+        
