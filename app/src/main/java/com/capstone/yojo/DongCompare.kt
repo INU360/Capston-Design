@@ -150,4 +150,111 @@ class DongCompare : AppCompatActivity() {
         bindingDong.getOrNull(initIndex)?.performClick()
     }
 
+       /**
+     * 차트에 데이터를 Binding 한다.
+     */
+    private fun loadChart(index: Int) = with(binding.graph) {
+        val groupSpace = 0.2f
+        val barSpace = 0.0f
+        val barWidth = 0.4f
+
+        val values1: ArrayList<BarEntry> = ArrayList()
+        val values2: ArrayList<BarEntry> = ArrayList()
+
+        values1.run {
+            add(BarEntry(0f, facilities[index].education.toFloat()))
+            add(BarEntry(1f, facilities[index].seniorWelfare.toFloat()))
+            add(BarEntry(2f, facilities[index].play.toFloat()))
+            add(BarEntry(3f, facilities[index].shopping.toFloat()))
+            add(BarEntry(4f, facilities[index].amenity.toFloat()))
+            add(BarEntry(5f, facilities[index].medical.toFloat()))
+        }
+
+        values2.run {
+            add(BarEntry(0f, facilities.sumOf { it.education }.toFloat() / facilities.size))
+            add(BarEntry(1f, facilities.sumOf { it.seniorWelfare }.toFloat() / facilities.size))
+            add(BarEntry(2f, facilities.sumOf { it.play }.toFloat() / facilities.size))
+            add(BarEntry(3f, facilities.sumOf { it.shopping }.toFloat() / facilities.size))
+            add(BarEntry(4f, facilities.sumOf { it.amenity }.toFloat() / facilities.size))
+            add(BarEntry(5f, facilities.sumOf { it.medical }.toFloat() / facilities.size))
+        }
+
+        val set1: BarDataSet
+        val set2: BarDataSet
+
+        if (data != null && data.dataSetCount > 0) {
+            set1 = data.getDataSetByIndex(0) as BarDataSet
+            set1.values = values1
+
+            set2 = data.getDataSetByIndex(1) as BarDataSet
+            set2.values = values2
+
+            data.notifyDataChanged()
+            notifyDataSetChanged()
+
+        } else {
+            set1 = BarDataSet(values1, bindingDong[index].text.toString())
+            set1.color = Color.rgb(0x5b, 0x9a, 0xd5)
+            set1.valueTextSize = 9f
+            set1.isHighlightEnabled = false
+
+            set2 = BarDataSet(values2, "평균")
+            set2.color = Color.rgb(0xa5, 0xa5, 0xa6)
+            set2.valueTextSize = 9f
+            set2.isHighlightEnabled = false
+
+            val data = BarData(set1, set2)
+            data.setValueFormatter(LargeValueFormatter())
+            setData(data)
+        }
+
+        // specify the width each bar should have
+        barData.barWidth = barWidth
+        groupBars(0f, groupSpace, barSpace)
+
+        invalidate()
+    }
+
+    private data class Facility(
+        val nursery: Int,           // 어린이 집
+        val youthWelfare: Int,      // 청소년 복지
+        val school: Int,            // 학교
+        val seniorClub: Int,        // 경로당
+        val nursingHome: Int,       // 요양원
+        val internetCafe: Int,      // PC방
+        val coinKaraoke: Int,       // 코인 노래방
+        val cinema: Int,            // 영화관
+        val mart: Int,              // 마트
+        val outlet: Int,            // 아울렛
+        val hospital: Int,          // 병의원
+        val pharmacy: Int,          // 약국
+        val bank: Int,              // 은행
+        val laundry: Int,           // 세탁소
+        val convenienceStore: Int,  // 편의점
+    ) {
+        // 교육
+        val education: Int
+            get() = nursery + youthWelfare + school
+
+        // 노인복지
+        val seniorWelfare: Int
+            get() = seniorClub + nursingHome
+
+        // 놀이시설
+        val play: Int
+            get() = internetCafe + coinKaraoke + cinema
+
+        // 쇼핑
+        val shopping: Int
+            get() = mart + outlet
+
+        // 의료시설
+        val medical: Int
+            get() = hospital + pharmacy
+
+        // 편의시설
+        val amenity: Int
+            get() = bank + laundry + convenienceStore
+    }
+}
         
