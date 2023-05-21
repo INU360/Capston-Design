@@ -19,7 +19,7 @@ class DongCompare : AppCompatActivity() {
     private val binding by lazy { DongCompareBinding.inflate(layoutInflater) }
 
     /**
-     * 버튼 리스트
+     *  버튼 리스트
      */
     private val bindingDong by lazy {
         listOf(
