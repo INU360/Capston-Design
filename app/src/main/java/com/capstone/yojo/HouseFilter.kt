@@ -17,7 +17,7 @@ class HouseFilter : AppCompatActivity() {
         val binding = HouseFilterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        /* '거래 유형 버튼(매매,전세,월세)' 이벤트 처리  */
+        /* '거래 유형 버튼(매매,전세,월세)' 이벤트 처리   */
         var bindingType =
             arrayOf(binding.maemae, binding.junsae, binding.wolsae) //거래 유형 버튼(매매,전세,월세) 바인딩 배열
         var resultType = "" //선택된 거래 유형(매매,전세,월세)을 담을 변수 선언
