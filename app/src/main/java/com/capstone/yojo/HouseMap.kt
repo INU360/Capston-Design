@@ -191,8 +191,8 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
     @SuppressLint("ResourceAsColor")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode != Activity.RESULT_OK) return;
+        // 필터링을 하지 않을 경우 기존 화면으로 돌아옴
+        if (resultCode != Activity.RESULT_OK) return; 
 
         val resultType = data?.getStringExtra("resultType") //사용자가 선택한 거래유형
         val resultArea = data?.getStringExtra("resultArea") //사용자가 선택한 면적
