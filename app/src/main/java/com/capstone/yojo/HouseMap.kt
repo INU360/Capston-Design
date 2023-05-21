@@ -1,6 +1,7 @@
 package com.capstone.yojo
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -38,7 +39,8 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
     private val filteredMarkerDataList = MutableLiveData<List<MarkerData>>() //마커를 찍을 데이터를 저장하는 리스트
 
     // 03 19 아파트 마커 추가
-    private val filteredAptMarkerDataList = MutableLiveData<List<MarkerData>>() //마커를 찍을 데이터를 저장하는 리스트
+    private val filteredAptMarkerDataList =
+        MutableLiveData<List<MarkerData>>() //마커를 찍을 데이터를 저장하는 리스트
 
     // 건물명을 키값으로 가지고, 해당 건물의 이름,주소,위도,경도 저장함
     private val yeonsu = LatLng(37.410097, 126.678560)
@@ -87,6 +89,7 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
             addMarkers(it)
         }
     } //onCreate 끝
+
 
     // 저장된 오피스텔 마커리스트 가져오기
     private fun loadOpiMarkerDataList(): List<MarkerData> {
@@ -188,6 +191,9 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
     @SuppressLint("ResourceAsColor")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode != Activity.RESULT_OK) return;
+
         val resultType = data?.getStringExtra("resultType") //사용자가 선택한 거래유형
         val resultArea = data?.getStringExtra("resultArea") //사용자가 선택한 면적
         val resultYear = data?.getStringExtra("resultYear") //사용자가 선택한 준공년도
@@ -271,6 +277,7 @@ class HouseMap : AppCompatActivity(), OnMapReadyCallback {
         // 필터링 된 값으로 검색 버튼 텍스트 변경
         binding.btnSearch.setTextColor(ContextCompat.getColor(applicationContext!!, R.color.black))
         binding.btnSearch.text = result
+        intent.putExtra("houseType", houseType)
 
         hideCardView()
     }
